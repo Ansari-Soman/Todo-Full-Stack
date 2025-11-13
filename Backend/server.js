@@ -7,8 +7,11 @@ const cors = require("cors");
 // Local Module
 const connectDB = require("./Config/db");
 const authRoutes = require("./Routes/authRoutes");
+const todoRoutes = require("./Routes/todoRoutes");
 
+// Creating server
 const app = express();
+
 //Middle to handle cors
 app.use(
   cors({
@@ -26,6 +29,7 @@ connectDB();
 
 //Auth
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/todo", todoRoutes);
 
 // server
 const PORT = 8000;
