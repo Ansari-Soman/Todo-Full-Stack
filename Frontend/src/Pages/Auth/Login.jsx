@@ -1,19 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Input from "../../Components/common/Input";
-import { validateEmail } from "../../Utils/helper";
 import { TodoContext } from "../../Context/TodoContext";
+import { Link, useNavigate } from "react-router-dom";
+import { validateEmail } from "../../Utils/helper";
+import Input from "../../Components/common/Input";
 import useAuthAction from "../../Hooks/useAuthAction";
 
-const SignUp = () => {
-  const [fullName, setFullName] = useState("");
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const navigate = useNavigate();
-  const { registerUser } = useAuthAction();
+  const [error, setError] = useState(null);
   const { user } = useContext(TodoContext);
+  const { loginUser } = useAuthAction();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -21,33 +19,22 @@ const SignUp = () => {
     }
   }, [user, navigate]);
 
-  const handleSignUp = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (!fullName) {
-      setError("Please enter your name");
-      return;
-    }
 
     if (!validateEmail(email)) {
       setError("Please enter a valid email address");
       return;
     }
-
     if (!password) {
       setError("Please enter the password");
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password should have at least 8 characters");
-      return;
-    }
-
     setError("");
 
-    // SignUp API call
-    const result = await registerUser(fullName, email, password);
+    // Login API
+    const result = await loginUser(email, password);
     if (!result.success) {
       setError(result.error);
     }
@@ -56,7 +43,7 @@ const SignUp = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Card */}
+        {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10">
           {/* Header */}
           <div className="text-center mb-8">
@@ -71,44 +58,35 @@ const SignUp = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 11c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-2.2 0-4 1.8-4 4v1h8v-1c0-2.2-1.8-4-4-4z"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
             </div>
-
             <h2 className="text-3xl font-bold text-gray-800 mb-2">
-              Create Account
+              Welcome Back
             </h2>
-            <p className="text-gray-500">Start your journey with us</p>
+            <p className="text-gray-500">Sign in to continue to your tasks</p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSignUp} className="space-y-5">
-            <Input
-              value={fullName}
-              onChange={({ target }) => setFullName(target.value)}
-              label="Full Name"
-              placeholder="John Doe"
-              type="text"
-            />
-
+          <form onSubmit={handleLogin} className="space-y-5">
             <Input
               value={email}
               onChange={({ target }) => setEmail(target.value)}
               label="Email Address"
               placeholder="you@example.com"
-              type="text"
+              type="email"
             />
 
             <Input
               value={password}
               onChange={({ target }) => setPassword(target.value)}
               label="Password"
-              placeholder="Min 8 characters"
+              placeholder="Enter your password"
               type="password"
             />
 
-            {/* Error message */}
+            {/* Error Message */}
             {error && (
               <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
                 <div className="flex items-center">
@@ -119,7 +97,7 @@ const SignUp = () => {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1.293-9.293a1 1 0 011.414 0L10 9.586l1.293-1.293a1 1 0 011.414 1.414L11.414 11l1.293 1.293a1 1 0 01-1.414 1.414L10 12.414l-1.293 1.293a1 1 0 01-1.414-1.414L8.586 11 7.293 9.707a1 1 0 010-1.414z"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -132,12 +110,12 @@ const SignUp = () => {
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold text-lg py-3 rounded-lg
-                         hover:from-blue-600 hover:to-blue-700 
-                         active:from-blue-700 active:to-blue-800
-                         transition-all duration-200 shadow-lg hover:shadow-xl
-                         transform hover:scale-[1.02] active:scale-[0.98]"
+                       hover:from-blue-600 hover:to-blue-700 
+                       active:from-blue-700 active:to-blue-800
+                       transition-all duration-200 shadow-lg hover:shadow-xl
+                       transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              Sign Up
+              Sign In
             </button>
           </form>
 
@@ -151,25 +129,25 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Login Link */}
+          {/* Sign Up Link */}
           <p className="text-center text-gray-600">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <Link
-              to="/login"
+              to="/signup"
               className="text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors duration-200"
             >
-              Log In
+              Create Account
             </Link>
           </p>
         </div>
 
-        {/* Footer text */}
+        {/* Footer Text */}
         <p className="text-center text-sm text-gray-500 mt-6">
-          Manage your tasks easily with TodoApp
+          Manage your tasks efficiently with TodoApp
         </p>
       </div>
     </div>
   );
 };
 
-export default SignUp;
+export default Login;

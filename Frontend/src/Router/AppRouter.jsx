@@ -1,25 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import WebWrapper from "../Wrappers/WebWrapper";
-import SummaryBar from "../Components/SummaryBar";
-import Header from "../Components/Header";
-import Input from "../Components/Input";
-import TaskList from "../Components/TaskList";
-import axiosInstance from "../Utils/axiosInstance";
-import toast from "react-hot-toast";
-import { API_PATH } from "../Utils/apiPath";
+import Header from "../Components/common/Header";
 import Main from "../Pages/Todo/Main";
+import Login from "../Pages/Auth/Login";
+import SignUp from "../Pages/Auth/SignUp";
 
 const AppRouter = () => {
-
-
   const router = createBrowserRouter([
     {
       element: <WebWrapper />,
       children: [
         {
           path: "/",
-          element: <Main />,
+          element: (
+            <>
+              <Header />
+              <Main />
+            </>
+          ),
+        },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/signup",
+          element: <SignUp />,
         },
       ],
     },

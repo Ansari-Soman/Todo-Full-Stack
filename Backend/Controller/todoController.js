@@ -14,7 +14,7 @@ exports.addTodo = async (req, res) => {
       date,
     });
     await newTodo.save();
-    res.status(200).json(newTodo);
+    return res.status(200).json(newTodo);
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -34,24 +34,20 @@ exports.getAllTodo = async (req, res) => {
 // Update todo
 exports.updateTodo = async (req, res) => {
   const id = req.params.id;
-  const { todoName, date, completed } = req.body;
-  if (!todoName || !date || !completed) {
-    res.status(200).json({ message: "All fields are required" });
+  const { completed } = req.body;
+  if (completed === undefined) {
+    return res.status(200).json({ message: "All fields are required" });
   }
   try {
     const update = await Todo.findByIdAndUpdate(
       id,
-      {
-        todoName: todoName,
-        date: date,
-        completed: completed,
-      },
+      { completed: completed },
       { new: true }
     );
     if (!update) {
-      res.status(400).json({ message: "Todo not found" });
+      return res.status(400).json({ message: "Todo not found" });
     }
-    res.status(200).json(update);
+    return res.status(200).json(update);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
