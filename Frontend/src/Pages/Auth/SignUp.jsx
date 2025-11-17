@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useState } from "react";
 
 const SignUp = () => {
-  return (
-    <div>SignUp</div>
-  )
-}
+  const [fullName, setFullName] = useState("");
+  return <div>SignUp</div>;
+};
 
-export default SignUp
+export default SignUp;

@@ -12,13 +12,13 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className=" space-x-3  ">
-          <button className="bg-gray-200 py-2 px-4 rounded-lg font-semibold text-blue-500 cursor-pointer hover:bg-gray-300 transition-colors duration-300 w-24">
+        <div className="space-x-3">
+          <Link to='/login' className="bg-gray-200 py-2 px-4 rounded-lg font-semibold text-blue-500 cursor-pointer hover:bg-gray-300 transition-colors duration-300 w-24">
             Login
-          </button>
-          <button className="text-gray-200 py-2 px-4 rounded-lg font-semibold bg-blue-500 cursor-pointer hover:bg-blue-600 transition-colors duration-300 w-24">
+          </Link>
+          <Link to='/signup' className="text-gray-200 py-2 px-4 rounded-lg font-semibold bg-blue-500 cursor-pointer hover:bg-blue-600 transition-colors duration-300 w-24">
             Sign Up
-          </button>
+          </Link>
         </div>
       </div>
     </>
