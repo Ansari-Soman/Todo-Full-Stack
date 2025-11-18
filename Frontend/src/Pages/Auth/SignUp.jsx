@@ -16,7 +16,8 @@ const SignUp = () => {
   const { user } = useContext(TodoContext);
 
   useEffect(() => {
-    if (user) {
+    const token = localStorage.getItem('token')
+    if (user || token) {
       navigate("/");
     }
   }, [user, navigate]);

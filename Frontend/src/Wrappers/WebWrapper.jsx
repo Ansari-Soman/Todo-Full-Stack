@@ -9,6 +9,8 @@ const WebWrapper = () => {
 
   const clearUser = () => {
     setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   // Check if user exists

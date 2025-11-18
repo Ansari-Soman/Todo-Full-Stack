@@ -10,22 +10,21 @@ const useUserAuth = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // If user already exists, no need to fetch
-    if (user) return;
-
     let isMounted = true;
 
     const token = localStorage.getItem("token");
 
     // If no token → redirect to login ONLY if not already on login page
     if (!token) {
+      console.log("In the clearUser");
+      clearUser();
       if (location.pathname !== "/login") {
-        clearUser();
         navigate("/login");
       }
       return;
     }
 
+    if (user) return;
     const fetchUserInfo = async () => {
       try {
         const response = await axiosInstance.get(API_PATH.AUTH.GET_USER_INFO);
