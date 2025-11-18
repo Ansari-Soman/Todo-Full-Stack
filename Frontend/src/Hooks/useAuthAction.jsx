@@ -2,10 +2,12 @@ import React, { useContext } from "react";
 import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { TodoContext } from "../Context/TodoContext";
+import { useNavigate } from "react-router-dom";
 
 const useAuthAction = () => {
   const { updateUser } = useContext(TodoContext);
-  
+  const navigate = useNavigate();
+
   const registerUser = async (fullName, email, password) => {
     try {
       const response = await axiosInstance.post(API_PATH.AUTH.REGISTER, {

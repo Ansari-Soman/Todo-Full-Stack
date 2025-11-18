@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TodoContext } from "../Context/TodoContext";
 import { Outlet } from "react-router-dom";
 const WebWrapper = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const updateUser = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -13,14 +16,6 @@ const WebWrapper = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   };
-
-  // Check if user exists
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
 
   return (
     <TodoContext.Provider value={{ user, updateUser, clearUser }}>

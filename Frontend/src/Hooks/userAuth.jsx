@@ -33,6 +33,7 @@ const useUserAuth = () => {
           updateUser(response.data);
         }
       } catch (error) {
+        console.error("Error while authentication, ", error);
         if (isMounted) {
           clearUser();
           localStorage.removeItem("token");
