@@ -38,7 +38,6 @@ const useAuthAction = () => {
       const { token, userWithoutPassword } = response.data;
       if (token) {
         localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(userWithoutPassword));
         updateUser(userWithoutPassword);
         navigate("/");
       }

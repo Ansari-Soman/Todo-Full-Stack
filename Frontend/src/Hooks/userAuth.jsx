@@ -31,9 +31,6 @@ const useUserAuth = () => {
 
         if (isMounted && response?.data) {
           updateUser(response.data);
-
-          // Save to localStorage also (optional)
-          localStorage.setItem("user", JSON.stringify(response.data));
         }
       } catch (error) {
         if (isMounted) {
