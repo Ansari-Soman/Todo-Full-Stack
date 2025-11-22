@@ -1,13 +1,13 @@
-require("dotenv").config();
+import "dotenv/config";
 
 // Helper module
-const express = require("express");
-const cors = require("cors");
-
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 // Local Module
-const connectDB = require("./Config/db");
-const authRoutes = require("./Routes/authRoutes");
-const todoRoutes = require("./Routes/todoRoutes");
+import connectDB from "./Config/db.js";
+import authRoutes from "./Routes/authRoutes.js";
+import todoRoutes from "./Routes/todoRoutes.js";
 
 // Creating server
 const app = express();
@@ -23,6 +23,7 @@ app.use(
 
 // Use of json
 app.use(express.json());
+app.use(cookieParser());
 
 // Connecting to DB
 connectDB();

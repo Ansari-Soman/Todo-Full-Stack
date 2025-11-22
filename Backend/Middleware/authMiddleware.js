@@ -1,7 +1,7 @@
-const User = require("../Model/User");
-const jwt = require("jsonwebtoken");
+import User from "../Model/User.js";
+import jwt from "jsonwebtoken";
 
-exports.protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   let token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).json({ message: "Not authorized, no token" });

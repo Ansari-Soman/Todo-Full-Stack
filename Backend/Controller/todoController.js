@@ -1,7 +1,7 @@
-const Todo = require("../Model/Todo");
+import Todo from "../Model/Todo.js";
 
 // Add todo
-exports.addTodo = async (req, res) => {
+export const addTodo = async (req, res) => {
   const userId = req.user.id;
   const { todoName, date } = req.body;
   if (!todoName || !date) {
@@ -21,7 +21,7 @@ exports.addTodo = async (req, res) => {
 };
 
 // Get all todo
-exports.getAllTodo = async (req, res) => {
+export const getAllTodo = async (req, res) => {
   const userId = req.user.id;
   try {
     const allTodos = await Todo.find({ userId }).sort({ date: -1 });
@@ -32,11 +32,13 @@ exports.getAllTodo = async (req, res) => {
 };
 
 // Update todo
-exports.updateTodo = async (req, res) => {
+export const updateTodo = async (req, res) => {
   const id = req.params.id;
   const { completed } = req.body;
+  // NOTE: This check has a minor logic issue: it returns 200 (Success) with an error message.
+  // A 400 (Bad Request) status is typically more appropriate for missing fields.
   if (completed === undefined) {
-    return res.status(200).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "Completed field is required" });
   }
   try {
     const update = await Todo.findByIdAndUpdate(
@@ -45,7 +47,7 @@ exports.updateTodo = async (req, res) => {
       { new: true }
     );
     if (!update) {
-      return res.status(400).json({ message: "Todo not found" });
+      return res.status(404).json({ message: "Todo not found" });
     }
     return res.status(200).json(update);
   } catch (error) {
@@ -54,9 +56,12 @@ exports.updateTodo = async (req, res) => {
 };
 
 // Delete todo
-exports.deleteTodo = async (req, res) => {
+export const deleteTodo = async (req, res) => {
   try {
-    await Todo.findByIdAndDelete(req.params.id);
+    const deletedTodo = await Todo.findByIdAndDelete(req.params.id);
+    if (!deletedTodo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
     res.status(200).json({ message: "Todo deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Server Error" });

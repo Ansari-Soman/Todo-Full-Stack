@@ -1,11 +1,11 @@
-const express = require("express");
-const { protect } = require("../Middleware/authMiddleware");
-const {
+import express from "express";
+import { protect } from "../Middleware/authMiddleware.js";
+import {
   addTodo,
   updateTodo,
   getAllTodo,
   deleteTodo,
-} = require("../Controller/todoController");
+} from "../Controller/todoController.js";
 
 const router = express.Router();
 
@@ -14,4 +14,4 @@ router.put("/update/:id", protect, updateTodo);
 router.get("/get", protect, getAllTodo);
 router.delete("/delete/:id", protect, deleteTodo);
 
-module.exports = router;
+export default router;
