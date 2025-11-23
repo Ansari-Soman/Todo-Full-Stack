@@ -1,9 +1,6 @@
 import resend from "../Config/resend.js";
 import fs from "fs";
 import path from "path";
-import resend from "../Config/resend.js";
-import fs from "fs";
-import path from "path";
 
 const loadTemplate = (fileName) => {
   const filePath = path.join(process.cwd(), "emails", fileName);

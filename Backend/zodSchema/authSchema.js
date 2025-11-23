@@ -7,45 +7,70 @@ import {
   objectIdField,
 } from "./commonSchemas.js";
 
-export const registerUserSchema = z.object({
-  email: emailField,
-  fullName: z.string().min(3, "Full name must be at least 3 characters long"),
-});
-export const sendVerifyEmailOtpSchema = z.object({
-  email: emailField,
-});
+// REGISTER USER
+export const registerUserSchema = {
+  query: z.object({
+    email: emailField,
+    fullName: z.string().min(3, "Full name must be at least 3 characters long"),
+  }),
+};
 
-export const checkVerifyEmailOtpSchema = z.object({
-  email: emailField,
-  otp: otpField,
-});
+// SEND OTP
+export const sendVerifyEmailOtpSchema = {
+  body: z.object({
+    email: emailField,
+  }),
+};
 
-export const setUserPasswordSchema = z.object({
-  email: emailField,
-  password: passwordField,
-});
+// CHECK OTP
+export const checkVerifyEmailOtpSchema = {
+  body: z.object({
+    email: emailField,
+    otp: otpField,
+  }),
+};
 
-export const loginUserSchema = z.object({
-  email: emailField,
-  password: z.string().min(1, "Password is required"),
-});
+// SET PASSWORD
+export const setUserPasswordSchema = {
+  body: z.object({
+    email: emailField,
+    password: passwordField,
+  }),
+};
 
-// ✔ For controller that requires userId
-export const userIdSchema = z.object({
-  userId: objectIdField,
-});
+// LOGIN USER
+export const loginUserSchema = {
+  body: z.object({
+    email: emailField,
+    password: z.string().min(1, "Password is required"),
+  }),
+};
 
-// ✔ For controller that requires only token (JWT)
-export const tokenSchema = z.object({
-  token: tokenField,
-});
+// USER ID (for controllers using :userId param)
+export const userIdSchema = {
+  params: z.object({
+    userId: objectIdField,
+  }),
+};
 
-// ✔ For controller that requires token + newPassword
-export const tokenPasswordSchema = z.object({
-  token: tokenField,
-  newPassword: passwordField,
-});
+// ONLY TOKEN (JWT)
+export const tokenSchema = {
+  body: z.object({
+    token: tokenField,
+  }),
+};
 
-export const checkUserExistSchema = z.object({
-  email: emailField,
-});
+// TOKEN + NEW PASSWORD
+export const tokenPasswordSchema = {
+  body: z.object({
+    token: tokenField,
+    newPassword: passwordField,
+  }),
+};
+
+// CHECK USER EXISTS
+export const checkUserExistSchema = {
+  body: z.object({
+    email: emailField,
+  }),
+};
