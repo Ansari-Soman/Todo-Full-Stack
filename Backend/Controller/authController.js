@@ -7,7 +7,7 @@ import {
 } from "../helper/email.js";
 import User from "../Model/User.js";
 import jwt from "jsonwebtoken";
-import asyncHandler from "../Utils/asyncHandler.js"; 
+import asyncHandler from "../Utils/asyncHandler.js";
 import crypto from "crypto";
 const generateLoginToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });

@@ -9,7 +9,7 @@ import {
 
 // REGISTER USER
 export const registerUserSchema = {
-  query: z.object({
+  body: z.object({
     email: emailField,
     fullName: z.string().min(3, "Full name must be at least 3 characters long"),
   }),
@@ -70,7 +70,7 @@ export const tokenPasswordSchema = {
 
 // CHECK USER EXISTS
 export const checkUserExistSchema = {
-  body: z.object({
+  query: z.object({
     email: emailField,
   }),
 };
