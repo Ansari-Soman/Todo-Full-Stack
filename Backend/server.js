@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./Config/db.js";
 import authRoutes from "./Routes/authRoutes.js";
 import todoRoutes from "./Routes/todoRoutes.js";
+import errorHandler from "./Middleware/errorHandler.js";
 
 // Creating server
 const app = express();
@@ -32,8 +33,8 @@ connectDB();
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/todo", todoRoutes);
 
+app.use(errorHandler);
 // server
-const PORT = 8000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 8000;app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

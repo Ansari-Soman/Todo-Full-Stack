@@ -16,6 +16,15 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Deleting unverified user after 1 hour
+UserSchema.index(
+  { createdAt: 1 },
+  {
+    expireAfterSeconds: 3600,
+    partialFilterExpression: { isAccountVerified: false },
+  }
+);
+
 // Hashing password
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {

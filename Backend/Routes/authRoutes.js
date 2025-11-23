@@ -11,28 +11,53 @@ import {
   resetPassword,
   registerUser,
 } from "../Controller/authController.js";
+import { validate } from "../Middleware/validate.js";
 import { protect } from "../Middleware/authMiddleware.js";
+import {
+  checkVerifyEmailOtpSchema,
+  registerUserSchema,
+  sendVerifyEmailOtpSchema,
+  setUserPasswordSchema,
+  tokenSchema,
+  loginUserSchema,
+  tokenPasswordSchema,
+  checkUserExistSchema,
+} from "../zodSchema/authSchema.js";
 
 const router = express.Router();
 
 // REGISTER
-router.get("/check-user", checkUserExist);
-router.post("/register-user", registerUser);
-router.post("/send-email-otp", sendVerifyEmailOtp);
-router.post("/verify-email-otp", checkVerifyEmailOtp);
-router.put("/set-password", setUserPassword);
+router.get("/check-user", validate(checkUserExistSchema), checkUserExist);
+
+router.post("/register-user", validate(registerUserSchema), registerUser);
+
+router.post(
+  "/send-email-otp",
+  validate(sendVerifyEmailOtpSchema),
+  sendVerifyEmailOtp
+);
+
+router.post(
+  "/verify-email-otp",
+  validate(checkVerifyEmailOtpSchema),
+  checkVerifyEmailOtp
+);
+
+router.put("/set-password", validate(setUserPasswordSchema), setUserPassword);
 
 // LOGIN
-router.post("/login", loginUser);
+router.post("/login", validate(loginUserSchema), loginUser);
 
-// RESET
-router.post("/reset-password-link", resetPasswordLink);
-router.get("/verify-reset-token", verifyResetToken);
-router.put("/reset-password", resetPassword);
+router.post(
+  "/reset-password-link",
+  validate(sendVerifyEmailOtpSchema),
+  resetPasswordLink
+);
 
+router.post("/verify-reset-token", validate(tokenSchema), verifyResetToken);
+
+router.put("/reset-password", validate(tokenPasswordSchema), resetPassword);
 
 router.get("/getUser", protect, getUserInfo);
-
-
 
 export default router;
