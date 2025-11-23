@@ -9,9 +9,8 @@ import {
 
 export const registerUserSchema = z.object({
   email: emailField,
-  fullName: z.string().min(3, "Full name is required"),
+  fullName: z.string().min(3, "Full name must be at least 3 characters long"),
 });
-
 export const sendVerifyEmailOtpSchema = z.object({
   email: emailField,
 });

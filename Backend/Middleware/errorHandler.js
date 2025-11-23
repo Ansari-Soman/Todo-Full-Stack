@@ -5,16 +5,14 @@ const errorHandler = (err, req, res, next) => {
   const isJSONError =
     err instanceof SyntaxError && err.status === 400 && "body" in err;
 
-  if (process.env.NODE_ENV === "production") {
-    return res.status(statusCode).json({
-      success: false,
-      message: isJSONError
-        ? "Invalid JSON format in request body"
-        : statusCode === 500
-          ? "Internal server error"
-          : err.message,
-    });
-  }
+if (process.env.NODE_ENV === "production") {
+  return res.status(statusCode).json({
+    success: false,
+    message: isJSONError
+      ? "Invalid JSON format in request body"
+      : err.clientMessage || "An error occurred processing your request",
+  });
+}
 
   res.status(statusCode).json({
     success: false,

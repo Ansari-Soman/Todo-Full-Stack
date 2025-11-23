@@ -18,15 +18,15 @@ export const passwordField = z
 // OTP field
 export const otpField = z
   .string()
-  .min(6, "OTP must be 6 digits")
-  .max(6, "OTP must be 6 digits");
-
+  .length(6, "OTP must be 6 digits")
+  .regex(/^\d{6}$/, "OTP must be 6 digits");
 // JWT token field
 export const tokenField = z
   .string({ required_error: "Token is required" })
   .min(10, "Invalid token");
 
 // MongoDB ObjectId field
+// MongoDB ObjectId field
 export const objectIdField = z
   .string()
-  .regex(/^[0-9a-fA-F]{24}$/, "Invalid userId format");
+  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format");

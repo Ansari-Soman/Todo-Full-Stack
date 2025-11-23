@@ -1,8 +1,9 @@
-import { error } from "console";
 import resend from "../Config/resend.js";
 import fs from "fs";
 import path from "path";
-
+import resend from "../Config/resend.js";
+import fs from "fs";
+import path from "path";
 
 const loadTemplate = (fileName) => {
   const filePath = path.join(process.cwd(), "emails", fileName);
@@ -58,7 +59,7 @@ export const sendResetSuccessEmail = async ({ to, loginUrl, name }) => {
     .replace("{{name}}", name || "there");
 
   try {
-    const result = await resend.emails.send({
+    return await resend.emails.send({
       from: process.env.SENDER_EMAIL,
       to: "ansari40953@gmail.com",
       subject: "Your Password Was Reset Successfully",
@@ -66,5 +67,6 @@ export const sendResetSuccessEmail = async ({ to, loginUrl, name }) => {
     });
   } catch (err) {
     console.log("error === ", err);
+    throw err;
   }
 };

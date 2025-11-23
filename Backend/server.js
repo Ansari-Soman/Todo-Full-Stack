@@ -35,6 +35,7 @@ app.use("/api/v1/todo", todoRoutes);
 
 app.use(errorHandler);
 // server
-const PORT = process.env.PORT || 8000;app.listen(PORT, () => {
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

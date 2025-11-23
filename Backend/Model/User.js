@@ -1,11 +1,12 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import { minLength } from "zod";
 
 const UserSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, default: "" },
+    password: { type: String, minLength: 8 },
     verifyOtp: { type: String, default: "" },
     verifyOtpExpiredAt: { type: Date, default: null },
     isAccountVerified: { type: Boolean, default: false },
@@ -28,7 +29,6 @@ UserSchema.index(
 // Hashing password
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    console.log("hashing password");
     this.password = await bcrypt.hash(this.password, 10);
   }
 

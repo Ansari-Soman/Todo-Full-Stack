@@ -7,13 +7,13 @@ import {
 } from "../helper/email.js";
 import User from "../Model/User.js";
 import jwt from "jsonwebtoken";
-import asyncHandler from "../Utils/asyncHandler.js"; // Import the wrapper
-
+import asyncHandler from "../Utils/asyncHandler.js"; 
+import crypto from "crypto";
 const generateLoginToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "365d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-const generateOTP = () => String(Math.floor(100000 + Math.random() * 900000));
+const generateOTP = () => String(crypto.randomInt(100000, 1000000));
 const generateResetPasswordOtp = (id) =>
   jwt.sign({ id }, process.env.RESET_SECRET, { expiresIn: "15m" });
 
@@ -201,7 +201,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  // Cheking usr and password
+  // Cheking user and password
   if (!user || !(await user.comparePassword(password))) {
     res.status(401);
     throw new Error("Invalid credentials");

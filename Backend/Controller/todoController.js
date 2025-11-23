@@ -35,13 +35,11 @@ export const getAllTodo = async (req, res) => {
 export const updateTodo = async (req, res) => {
   const id = req.params.id;
   const { completed } = req.body;
-  // NOTE: This check has a minor logic issue: it returns 200 (Success) with an error message.
-  // A 400 (Bad Request) status is typically more appropriate for missing fields.
   if (completed === undefined) {
     return res.status(400).json({ message: "Completed field is required" });
   }
   try {
-    const update = await Todo.findByIdAndUpdate(
+  const update = await Todo.findByIdAndUpdate(
       id,
       { completed: completed },
       { new: true }

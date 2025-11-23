@@ -4,12 +4,9 @@ export const validate = (schema) => {
   return (req, res, next) => {
     try {
       const data =
-        req.method === "GET"
-          ? req.query
-          : req.method === "DELETE"
-            ? req.query
-            : req.body;
-      schema.parse(data);
+        req.method === "GET" || req.method === "DELETE" ? req.query : req.body;
+      const validated = schema.parse(data);
+      req.validatedData = validated;
       next();
     } catch (err) {
       if (err instanceof ZodError) {
