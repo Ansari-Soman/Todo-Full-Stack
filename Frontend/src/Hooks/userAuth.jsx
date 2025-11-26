@@ -16,7 +16,6 @@ const useUserAuth = () => {
 
     // If no token → redirect to login ONLY if not already on login page
     if (!token) {
-      console.log("In the clearUser");
       clearUser();
       if (location.pathname !== "/login") {
         navigate("/login");

@@ -10,6 +10,7 @@ import {
   verifyResetToken,
   resetPassword,
   registerUser,
+  logoutUser,
 } from "../Controller/authController.js";
 import { validate } from "../Middleware/validate.js";
 import { protect } from "../Middleware/authMiddleware.js";
@@ -44,7 +45,7 @@ router.post(
 );
 
 router.put("/set-password", validate(setUserPasswordSchema), setUserPassword);
-
+router.post("/logout", logoutUser);
 // LOGIN
 router.post("/login", validate(loginUserSchema), loginUser);
 

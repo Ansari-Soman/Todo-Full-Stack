@@ -1,26 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../Components/common/Input";
-import { validateEmail } from "../../Utils/helper";
 import { TodoContext } from "../../Context/TodoContext";
 import useAuthAction from "../../Hooks/useAuthAction";
+import { isValidEmail, isValidPassword } from "../../Utils/validator";
+import { useAuth } from "../../Context/AuthContext";
 
 const SignUp = () => {
+  const { otpStatus } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const { registerUser } = useAuthAction();
-  const { user } = useContext(TodoContext);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (user || token) {
+    if (isAuthenticated) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -30,29 +30,21 @@ const SignUp = () => {
       return;
     }
 
-    if (!validateEmail(email)) {
+    if (!isValidEmail(email)) {
       setError("Please enter a valid email address");
-      return;
-    }
-
-    if (!password) {
-      setError("Please enter the password");
-      return;
-    }
-
-    if (password.length < 8) {
-      setError("Password should have at least 8 characters");
       return;
     }
 
     setError("");
 
     // SignUp API call
-    const result = await registerUser(fullName, email, password);
+    const result = await registerUser(fullName, email);
     if (!result.success) {
       setError(result.error);
     }
   };
+
+  useEffect(() => console.log("sign up == ", otpStatus));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
@@ -99,14 +91,6 @@ const SignUp = () => {
               label="Email Address"
               placeholder="you@example.com"
               type="text"
-            />
-
-            <Input
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-              label="Password"
-              placeholder="Min 8 characters"
-              type="password"
             />
 
             {/* Error message */}

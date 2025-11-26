@@ -46,7 +46,10 @@ const useTodoManager = () => {
     setLoading(true);
     try {
       const allTodos = await axiosInstance.get(API_PATH.TODO.GET_ALL_TODO);
-      setTodoList(allTodos.data);
+      if (allTodos?.data?.todos) {
+        return setTodoList(allTodos.data.todos);
+      }
+      setTodoList([]);
     } catch (error) {
       console.error("Something went wrong. Please try again");
     } finally {

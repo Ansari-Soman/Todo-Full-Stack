@@ -90,9 +90,11 @@ export const sendVerifyEmailOtp = asyncHandler(async (req, res) => {
     to: user.email,
     otp: otp,
   });
-  return res
-    .status(200)
-    .json({ success: true, message: "OTP sent to your email" });
+  return res.status(200).json({
+    success: true,
+    otpStatus: "sent",
+    message: "OTP sent to your email",
+  });
 });
 
 // VERIFY ACCOUNT
@@ -109,10 +111,12 @@ export const checkVerifyEmailOtp = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Account is already verified");
   }
+
   if (user.otpLockUntil && user.otpLockUntil > new Date()) {
     res.status(429);
     throw new Error("Account temporarily locked. Try again later");
   }
+
   if (user.otpAttemptCount >= 5) {
     user.otpLockUntil = new Date(Date.now() + 5 * 60 * 1000);
     user.otpAttemptCount = 0;
@@ -142,9 +146,11 @@ export const checkVerifyEmailOtp = asyncHandler(async (req, res) => {
   user.otpAttemptCount = 0;
   user.otpLockUntil = null;
   await user.save();
-  return res
-    .status(200)
-    .json({ success: true, message: "Verification successfull" });
+  return res.status(200).json({
+    success: true,
+    otpStatus: "verified",
+    message: "Verification successfull",
+  });
 });
 
 // SETTING USER PASSWORD
@@ -189,6 +195,7 @@ export const setUserPassword = asyncHandler(async (req, res) => {
   };
   return res.status(201).json({
     success: true,
+    accountStatus: "activated",
     message: "Account created successfully",
     userId: userData._id,
     userData,
@@ -260,7 +267,11 @@ export const getUserInfo = asyncHandler(async (req, res) => {
 export const verifyResetToken = asyncHandler((req, res) => {
   const { token } = req.body;
   jwt.verify(token, process.env.RESET_SECRET);
-  return res.status(200).json({ success: true, message: "Valid token" });
+  return res.status(200).json({
+    success: true,
+    resetTokenStatus: "valid",
+    message: "Valid token",
+  });
 });
 
 export const resetPasswordLink = asyncHandler(async (req, res) => {
@@ -328,4 +339,18 @@ export const resetPassword = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json({ success: true, message: "Password reset successful" });
+});
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  // Clear the cookie
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 });

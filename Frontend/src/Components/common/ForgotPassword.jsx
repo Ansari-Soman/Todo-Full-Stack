@@ -1,44 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
-import { TodoContext } from "../../Context/TodoContext";
-import { Link, useNavigate } from "react-router-dom";
-import Input from "../../Components/common/Input";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
-import { isValidEmail, isValidPassword } from "../../Utils/validator";
-import { useAuth } from "../../Context/AuthContext";
-import axiosInstance from "../../Utils/axiosInstance";
-import { API_PATH } from "../../Utils/apiPath";
-import AuthError from "../../Components/common/AuthError";
+import AuthError from "./AuthError";
 
-const Login = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { sendResetTokenLink } = useAuthAction();
   const [error, setError] = useState(null);
-  const { isAuthenticated } = useAuth();
-  const { loginUser } = useAuthAction();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
-
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-    if (!password) {
-      setError("Please enter the password");
-      return;
-    }
-
-    setError("");
-
-    // Login API
-    const result = await loginUser(email, password);
+    // Add your forgot password logic here
+    console.log("Email:", email);
+    const result = await sendResetTokenLink(email);
     if (!result.success) {
       setError(result.error);
     }
@@ -47,7 +20,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Login Card */}
+        {/* Forgot Password Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10">
           {/* Header */}
           <div className="text-center mb-8">
@@ -62,42 +35,38 @@ const Login = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                 />
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-gray-800 mb-2">
-              Welcome Back
+              Forgot Password?
             </h2>
-            <p className="text-gray-500">Sign in to continue to your tasks</p>
+            <p className="text-gray-500 leading-relaxed">
+              No worries! Enter your email and we'll send you a reset link
+            </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            <Input
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
-              label="Email Address"
-              placeholder="you@example.com"
-              type="email"
-            />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Input */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg
+                         focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
+                         transition-all duration-200"
+                required
+              />
+            </div>
 
-            <Input
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-              label="Password"
-              placeholder="Enter your password"
-              type="password"
-            />
-            <Link
-              to="/forgot-password"
-              className="text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors duration-200"
-            >
-              Forgot password?
-            </Link>
-            {/* Error Message */}
-            {error && <AuthError error={error} />}
-
+            {error && <AuthError />}
             {/* Submit Button */}
             <button
               type="submit"
@@ -107,7 +76,7 @@ const Login = () => {
                        transition-all duration-200 shadow-lg hover:shadow-xl
                        transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              Sign In
+              Send Reset Link
             </button>
           </form>
 
@@ -121,25 +90,52 @@ const Login = () => {
             </div>
           </div>
 
+          {/* Back to Login */}
+          <Link
+            to="/login"
+            className="flex items-center justify-center w-full text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Login
+          </Link>
+
           {/* Sign Up Link */}
-          <p className="text-center text-gray-600">
+          <p className="text-center text-gray-600 mt-6">
             Don't have an account?{" "}
             <Link
               to="/signup"
               className="text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors duration-200"
             >
-              Create Account
+              Sign Up
             </Link>
           </p>
         </div>
 
-        {/* Footer Text */}
+        {/* Help Text */}
         <p className="text-center text-sm text-gray-500 mt-6">
-          Manage your tasks efficiently with TodoApp
+          Remember your password?{" "}
+          <Link
+            to="/login"
+            className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
+          >
+            Sign In
+          </Link>
         </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default ForgotPassword;

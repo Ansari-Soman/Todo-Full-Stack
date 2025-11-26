@@ -1,16 +1,21 @@
-import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { TodoContext } from "../../Context/TodoContext";
+import { useAuth } from "../../Context/AuthContext";
+import axiosInstance from "../../Utils/axiosInstance";
+import { API_PATH } from "../../Utils/apiPath";
 
 const Header = () => {
-  const { user, clearUser } = useContext(TodoContext);
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
 
-    clearUser();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post(API_PATH.AUTH.LOGOUT);
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      logout();
+      navigate("/login");
+    }
   };
   return (
     <header className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-md sticky top-0 z-50">
@@ -30,7 +35,7 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          {user ? (
+          {isAuthenticated ? (
             <>
               <span className="text-blue-50 font-medium hidden md:inline-block mr-2">
                 Welcome,{" "}

@@ -1,10 +1,11 @@
 import React from "react";
 import AppRouter from "./Router/AppRouter";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./Context/AuthContext";
 
 const App = () => {
   return (
-    <div>
+    <AuthProvider>
       <AppRouter />
       <Toaster
         position="top-right"
@@ -30,7 +31,7 @@ const App = () => {
           },
         }}
       />
-    </div>
+    </AuthProvider>
   );
 };
 
