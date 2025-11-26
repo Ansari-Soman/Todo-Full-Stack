@@ -296,7 +296,7 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
   }
 
   const resetToken = generateResetPasswordOtp(user._id);
-  const resetLink = `${process.env.CLIENT_URL}/reset-password-link?token=${resetToken}`;
+  const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
   await sendResetPasswordEmail({
     to: user.email,
@@ -308,6 +308,7 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
   await user.save();
   return res.status(200).json({
     success: true,
+    resetEmailStatus: "sent",
     message: "Password reset link sent to your email",
   });
 });
