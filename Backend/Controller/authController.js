@@ -210,7 +210,6 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   // Cheking user and password
   if (!user || !(await user.comparePassword(password))) {
-    res.status(401);
     throw new Error("Invalid credentials");
   }
 

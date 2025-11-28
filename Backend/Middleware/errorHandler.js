@@ -2,8 +2,11 @@ const errorHandler = (err, req, res, next) => {
   const statusCode =
     res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
 
+
   const isJSONError =
     err instanceof SyntaxError && err.status === 400 && "body" in err;
+
+
 
   if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
     return res.status(400).json({
@@ -18,7 +21,7 @@ const errorHandler = (err, req, res, next) => {
       success: false,
       message: isJSONError
         ? "Invalid JSON format in request body"
-        : err.clientMessage || "An error occurred processing your request",
+        : err.message || "An error occurred processing your request",
     });
   }
 
