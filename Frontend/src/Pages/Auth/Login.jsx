@@ -1,13 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
-import { TodoContext } from "../../Context/TodoContext";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../Components/common/Input";
 import useAuthAction from "../../Hooks/useAuthAction";
-import { isValidEmail, isValidPassword } from "../../Utils/validator";
+import { isValidEmail } from "../../Utils/validator";
 import { useAuth } from "../../Context/AuthContext";
-import axiosInstance from "../../Utils/axiosInstance";
-import { API_PATH } from "../../Utils/apiPath";
-import AuthError from "../../Components/common/AuthError";
+import AuthError from "./AuthError";
 
 const Login = () => {
   const [email, setEmail] = useState("");

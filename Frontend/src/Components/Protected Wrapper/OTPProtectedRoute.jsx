@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
-import Loading from "./Loading";
+import Loading from "../common/Loading";
 
 const OTPProtectedRoute = ({ children }) => {
   const { otpStatus, loading } = useAuth();

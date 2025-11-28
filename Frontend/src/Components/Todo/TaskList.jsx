@@ -1,8 +1,9 @@
 import Task from "./Task";
-import useTodoManager from "../../Hooks/useTodoManager";
+import { useContext } from "react";
+import { TodoContext } from "../../Context/TodoContext";
 
 const TaskList = ({ todoList, deleteTodo, updateTodo }) => {
-  const { loading } = useTodoManager();
+  const { loading } = useContext(TodoContext);
 
   return (
     <div className="container mx-auto px-4 sm:px-10 mb-8">

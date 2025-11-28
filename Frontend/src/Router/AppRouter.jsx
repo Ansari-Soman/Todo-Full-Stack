@@ -4,16 +4,18 @@ import Header from "../Components/common/Header";
 import Main from "../Pages/Todo/Main";
 import Login from "../Pages/Auth/Login";
 import SignUp from "../Pages/Auth/SignUp";
-import ProtectedRoute from "../Components/common/ProtectedRoute";
-import VerifyOTP from "../Components/common/VerifyOTP";
-import ResetPassword from "../Components/common/ResetPassword";
-import SetPassword from "../Components/common/SetPassword";
-import EmailSent from "../Components/common/EmailSent";
-import SetPasswordProtectedRoute from "../Components/common/SetPasswordProtectedRoute";
-import ResetPasswordProtectedRoute from "../Components/common/ResetPasswordProtectedRoute";
-import OTPProtectedRoute from "../Components/common/OTPProtectedRoute";
-import ForgotPassword from "../Components/common/ForgotPassword";
+import VerifyOTP from "../Pages/Auth/VerifyOTP";
+import ResetPassword from "../Pages/Auth/ResetPassword";
+import SetPassword from "../Pages/Auth/SetPassword";
+import EmailSent from "../Pages/Auth/EmailSent";
+import SetPasswordProtectedRoute from "../Components/Protected Wrapper/SetPasswordProtectedRoute";
+import ResetPasswordProtectedRoute from "../Components/Protected Wrapper/ResetPasswordProtectedRoute";
+import OTPProtectedRoute from "../Components/Protected Wrapper/OTPProtectedRoute";
 import NotFound from "../Components/common/NotFound";
+import NonPrivateWrapper from "../Wrappers/NonPrivateWrapper";
+import PrivateWrapper from "../Wrappers/PrivateWrapper";
+import EmailSendProtected from "../Components/Protected Wrapper/EmailSendProtected";
+import ForgotPasswordEmail from "../Pages/Auth/ForgotPasswordEmail";
 
 const AppRouter = () => {
   const router = createBrowserRouter([
@@ -21,66 +23,68 @@ const AppRouter = () => {
       element: <WebWrapper />,
       children: [
         {
-          path: "/",
-          element: (
-            <>
-              <ProtectedRoute>
-                <Header />
-                <Main />
-              </ProtectedRoute>
-            </>
-          ),
-        },
-        {
-          path: "/login",
-          element: (
-            <>
-              <Login />
-            </>
-          ),
-        },
-        {
-          path: "/signup",
-          element: <SignUp />,
-        },
-        {
-          path: "/verify",
-          element: (
-            <>
-              <OTPProtectedRoute>
-                <VerifyOTP />
-              </OTPProtectedRoute>
-            </>
-          ),
-        },
-        {
-          path: "/set-password",
+          element: <NonPrivateWrapper />,
+          children: [
+            {
+              path: "/signup",
+              element: <SignUp />,
+            },
+            {
+              path: "/login",
+              element: <Login />,
+            },
+            {
+              path: "/verify",
+              element: (
+                <OTPProtectedRoute>
+                  <VerifyOTP />
+                </OTPProtectedRoute>
+              ),
+            },
+            {
+              path: "/email-send",
+              element: (
+                <EmailSendProtected>
+                  <EmailSent />
+                </EmailSendProtected>
+              ),
+            },
+            {
+              path: "/set-password",
+              element: (
+                <SetPasswordProtectedRoute>
+                  <SetPassword />
+                </SetPasswordProtectedRoute>
+              ),
+            },
 
-          element: (
-            <>
-              <SetPasswordProtectedRoute>
-                <SetPassword />
-              </SetPasswordProtectedRoute>
-            </>
-          ),
+            {
+              path: "/reset-password",
+              element: (
+                <ResetPasswordProtectedRoute>
+                  <ResetPassword />
+                </ResetPasswordProtectedRoute>
+              ),
+            },
+            {
+              path: "/forgot-password",
+              element: <ForgotPasswordEmail />,
+            },
+          ],
         },
         {
-          path: "/email-send",
-          element: <EmailSent />,
-        },
-        {
-          path: "/reset-password",
-          element: (
-            <>
-              <ResetPassword />
-              {/* <ResetPasswordProtectedRoute>
-              </ResetPasswordProtectedRoute> */}
-            </>
-          ),
-        },
-        {
-          path: "forgot-password",
-          element: <ForgotPassword />,
+          element: <PrivateWrapper />,
+          children: [
+            {
+              path: "/dashboard",
+              element: (
+                <>
+                  <Header />
+                  <Main />
+                </>
+              ),
+            },
+          ],
         },
         {
           path: "*",

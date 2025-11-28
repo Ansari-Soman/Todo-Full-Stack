@@ -34,7 +34,6 @@ const VerifyOTP = () => {
     e.preventDefault();
     // Add your OTP verification logic here
     const otpCode = otp.join("");
-    console.log("OTP Submitted:", otpCode);
     const result = await verifyOtp(otpCode);
     if (!result.success) {
       return setError(result.error);

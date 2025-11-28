@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import AuthError from "./AuthError";
 
-const ForgotPassword = () => {
+const ForgotPasswordEmail = () => {
   const [email, setEmail] = useState("");
   const { sendResetTokenLink } = useAuthAction();
   const [error, setError] = useState(null);
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Add your forgot password logic here
-    console.log("Email:", email);
     const result = await sendResetTokenLink(email);
     if (!result.success) {
       setError(result.error);
@@ -138,4 +137,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ForgotPasswordEmail;

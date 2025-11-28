@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import { useAuth } from "../../Context/AuthContext";
@@ -13,7 +13,6 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState(null);
   const { resetPassword } = useAuthAction();
-
   const { userEmail } = useAuth();
 
   // Password validation rules
@@ -37,11 +36,9 @@ const ResetPassword = () => {
   );
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!allValid) {
       return;
     }
-
     const result = await resetPassword(token, password);
     if (!result.success) {
       return setError(result.error);

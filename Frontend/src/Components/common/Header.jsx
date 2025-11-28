@@ -2,11 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import axiosInstance from "../../Utils/axiosInstance";
 import { API_PATH } from "../../Utils/apiPath";
+import { useState } from "react";
+import LogoutConfirmationModal from "./LogoutConfirmationModal";
 
 const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleLogout = async () => {
     try {
       await axiosInstance.post(API_PATH.AUTH.LOGOUT);
@@ -22,13 +24,13 @@ const Header = () => {
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
         <div className="flex gap-8 items-center">
           <Link
-            to="/"
+            to="/dashboard"
             className="text-2xl font-bold text-white hover:text-blue-100 transition-colors duration-200"
           >
             ✓ TodoApp
           </Link>
           <Link
-            to="/"
+            to="/dashboard"
             className="text-blue-50 hover:text-white font-medium transition-colors duration-200 hidden sm:block"
           >
             Home
@@ -44,11 +46,17 @@ const Header = () => {
                 </span>
               </span>
               <button
-                onClick={handleLogout}
+                onClick={() => setIsModalOpen(true)}
                 className="bg-white text-blue-600 py-2 px-5 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Logout
               </button>
+
+              <LogoutConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleLogout}
+              />
             </>
           ) : (
             <>

@@ -1,10 +1,9 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
-import Loading from "./Loading";
+import Loading from "../common/Loading";
 
 const SetPasswordProtectedRoute = ({ children }) => {
   const { otpStatus, loading } = useAuth();
-  console.log("set pass pro == ", loading, otpStatus);
   if (loading) {
     return <Loading />;
   }

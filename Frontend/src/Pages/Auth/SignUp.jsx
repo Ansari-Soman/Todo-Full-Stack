@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../Components/common/Input";
-import { TodoContext } from "../../Context/TodoContext";
 import useAuthAction from "../../Hooks/useAuthAction";
-import { isValidEmail, isValidPassword } from "../../Utils/validator";
+import { isValidEmail } from "../../Utils/validator";
 import { useAuth } from "../../Context/AuthContext";
 
 const SignUp = () => {
@@ -44,7 +43,6 @@ const SignUp = () => {
     }
   };
 
-  useEffect(() => console.log("sign up == ", otpStatus));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">

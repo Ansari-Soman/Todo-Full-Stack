@@ -1,4 +1,3 @@
-import React, { useContext } from "react";
 import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useNavigate } from "react-router-dom";
@@ -7,19 +6,12 @@ import toast from "react-hot-toast";
 
 const useAuthAction = () => {
   const {
-    user,
-    isAuthenticated,
-    loading,
     login,
-    logout,
-    otpStatus,
     setOtpStatus,
-    resetTokenStatus,
-    setResetTokenStatus,
-    accountStatus,
     setAccountStatus,
     userEmail,
     setUserEmail,
+    setResetEmailStatus,
   } = useAuth();
   const navigate = useNavigate();
 
@@ -94,11 +86,8 @@ const useAuthAction = () => {
         response?.data?.otpStatus === "verified"
       ) {
         setOtpStatus("verified");
-        setTimeout(() => {
-          navigate("/set-password");
-          toast.success("OTP verification successful.");
-          console.log(otpStatus);
-        }, 0);
+        navigate("/set-password");
+        toast.success("OTP verification successful.");
       }
       return { success: true };
     } catch (error) {
@@ -144,6 +133,7 @@ const useAuthAction = () => {
         { email }
       );
       if (response?.data?.success === true) {
+        setResetEmailStatus("sent");
         navigate("/email-send");
         toast.success("Password reset link sent to your email");
       }
@@ -165,16 +155,12 @@ const useAuthAction = () => {
         { token }
       );
       if (response?.data?.resetTokenStatus === "valid") {
-        setResetTokenStatus("valid");
-        navigate(`/reset-password/${token}`);
         return { success: true };
       }
-      setResetTokenStatus("invalid");
       return { success: false, error: "Invalid or expired token" };
     } catch (error) {
-      setResetTokenStatus("invalid");
-
       const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.errors[0] ||
         "Something went wrong. Please try again.";
       return { success: false, error: errorMessage };
@@ -183,8 +169,6 @@ const useAuthAction = () => {
 
   // Reset password
   const resetPassword = async (token, password) => {
-    console.log(token);
-    console.log(password);
     try {
       const response = await axiosInstance.put(API_PATH.AUTH.RESET_PASSWORD, {
         token,
