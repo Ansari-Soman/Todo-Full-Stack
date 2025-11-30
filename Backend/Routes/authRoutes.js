@@ -24,7 +24,9 @@ import {
   tokenPasswordSchema,
   checkUserExistSchema,
 } from "../zodSchema/authSchema.js";
-
+import otpLimiter from "../Middleware/rateLimiters/otpLimiter.js";
+import loginLimiter from "../Middleware/rateLimiters/loginLimiter.js";
+import resetPasswordLimiter from "../Middleware/rateLimiters/resetPasswordLimiter.js";
 const router = express.Router();
 
 // REGISTER
@@ -34,30 +36,39 @@ router.post("/register-user", validate(registerUserSchema), registerUser);
 
 router.post(
   "/send-email-otp",
+  otpLimiter,
   validate(sendVerifyEmailOtpSchema),
   sendVerifyEmailOtp
 );
 
 router.post(
   "/verify-email-otp",
+  otpLimiter,
   validate(checkVerifyEmailOtpSchema),
   checkVerifyEmailOtp
 );
 
 router.put("/set-password", validate(setUserPasswordSchema), setUserPassword);
+
 router.post("/logout", logoutUser);
 // LOGIN
-router.post("/login", validate(loginUserSchema), loginUser);
+router.post("/login", loginLimiter, validate(loginUserSchema), loginUser);
 
 router.post(
   "/reset-password-link",
+  resetPasswordLimiter,
   validate(sendVerifyEmailOtpSchema),
   resetPasswordLink
 );
 
 router.post("/verify-reset-token", validate(tokenSchema), verifyResetToken);
 
-router.put("/reset-password", validate(tokenPasswordSchema), resetPassword);
+router.put(
+  "/reset-password",
+  resetPasswordLimiter,
+  validate(tokenPasswordSchema),
+  resetPassword
+);
 
 router.get("/getUser", protect, getUserInfo);
 

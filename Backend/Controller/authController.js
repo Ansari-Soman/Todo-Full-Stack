@@ -7,15 +7,14 @@ import {
 } from "../helper/email.js";
 import User from "../Model/User.js";
 import jwt from "jsonwebtoken";
+import {
+  generateLoginToken,
+  generateOTP,
+  generateResetPasswordOtp,
+  setCookie,
+  setUserData,
+} from "../helper/helper.js";
 import asyncHandler from "../Utils/asyncHandler.js";
-import crypto from "crypto";
-const generateLoginToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-};
-
-const generateOTP = () => String(crypto.randomInt(100000, 1000000));
-const generateResetPasswordOtp = (id) =>
-  jwt.sign({ id }, process.env.RESET_SECRET, { expiresIn: "15m" });
 
 // When typing email for registration
 export const checkUserExist = asyncHandler(async (req, res) => {
@@ -68,28 +67,17 @@ export const sendVerifyEmailOtp = asyncHandler(async (req, res) => {
     throw new Error("Account is already verified");
   }
 
-  if (user.otpLockUntil && user.otpLockUntil > new Date()) {
-    res.status(429);
-    throw new Error("Too many attempts. Try again later");
-  }
-
-  if (user.resendOtpCooldown && user.resendOtpCooldown > new Date()) {
-    const waitTime = Math.ceil((user.resendOtpCooldown - Date.now()) / 1000);
-    res.status(429);
-    throw new Error(
-      `Please wait ${waitTime} seconds before requesting another OTP`
-    );
-  }
   const otp = generateOTP();
   user.verifyOtp = otp;
   user.verifyOtpExpiredAt = new Date(Date.now() + 15 * 60 * 1000);
-  user.resendOtpCooldown = new Date(Date.now() + 60 * 1000);
   await user.save();
+
   await sendEmailOtp({
     name: user.fullName,
     to: user.email,
     otp: otp,
   });
+
   return res.status(200).json({
     success: true,
     otpStatus: "sent",
@@ -112,19 +100,6 @@ export const checkVerifyEmailOtp = asyncHandler(async (req, res) => {
     throw new Error("Account is already verified");
   }
 
-  if (user.otpLockUntil && user.otpLockUntil > new Date()) {
-    res.status(429);
-    throw new Error("Account temporarily locked. Try again later");
-  }
-
-  if (user.otpAttemptCount >= 5) {
-    user.otpLockUntil = new Date(Date.now() + 5 * 60 * 1000);
-    user.otpAttemptCount = 0;
-    await user.save();
-    res.status(429);
-    throw new Error("Too many attempts. Try again later");
-  }
-
   // Checking expiration time
   if (user.verifyOtpExpiredAt && user.verifyOtpExpiredAt < new Date()) {
     res.status(400);
@@ -142,9 +117,6 @@ export const checkVerifyEmailOtp = asyncHandler(async (req, res) => {
   user.isAccountVerified = true;
   user.verifyOtp = "";
   user.verifyOtpExpiredAt = null;
-  user.resendOtpCooldown = null;
-  user.otpAttemptCount = 0;
-  user.otpLockUntil = null;
   await user.save();
   return res.status(200).json({
     success: true,
@@ -179,20 +151,11 @@ export const setUserPassword = asyncHandler(async (req, res) => {
     name: user.fullName,
   });
 
+  // Setting up cookie with token
   const token = generateLoginToken(user._id);
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+  setCookie(res, token);
 
-  const userData = {
-    _id: user._id,
-    fullName: user.fullName,
-    email: user.email,
-    isAccountVerified: user.isAccountVerified,
-  };
+  const userData = setUserData(user);
   return res.status(201).json({
     success: true,
     accountStatus: "activated",
@@ -219,22 +182,11 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Account is not verified");
   }
 
-  const userData = {
-    _id: user._id,
-    fullName: user.fullName,
-    email: user.email,
-    isAccountVerified: user.isAccountVerified,
-  };
+  const userData = setUserData(user);
 
   // Setting cookie
   const token = generateLoginToken(user._id);
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-
+  setCookie(res, token);
   // Successfull response
   return res.status(200).json({
     success: true,
@@ -288,12 +240,6 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
     throw new Error("Account is not verified");
   }
 
-  if (user.resendOtpCooldown && user.resendOtpCooldown > new Date()) {
-    const waitTime = Math.ceil((user.resendOtpCooldown - Date.now()) / 1000);
-    res.status(429);
-    throw new Error(`Please wait ${waitTime} seconds before requesting again`);
-  }
-
   const resetToken = generateResetPasswordOtp(user._id);
   const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
@@ -303,7 +249,6 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
     resetLink,
   });
 
-  user.resendOtpCooldown = new Date(Date.now() + 60 * 1000);
   await user.save();
   return res.status(200).json({
     success: true,
@@ -333,7 +278,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   await user.save();
   await sendResetSuccessEmail({
     to: user.email,
-    loginUrl: `${process.env.CLIENT_URL}/api/auth/login`,
+    loginUrl: `${process.env.CLIENT_URL}/login`,
     name: user.fullName,
   });
   return res

@@ -4,11 +4,14 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
+
 // Local Module
 import connectDB from "./Config/db.js";
 import authRoutes from "./Routes/authRoutes.js";
 import todoRoutes from "./Routes/todoRoutes.js";
 import errorHandler from "./Middleware/errorHandler.js";
+import globalLimiter from "./Middleware/rateLimiters/globalLimiter.js";
 
 // Creating server
 const app = express();
@@ -29,6 +32,12 @@ app.use(cookieParser());
 
 // Connecting to DB
 connectDB();
+
+// RATE LIMIT FOR ALL API
+
+
+
+app.use(globalLimiter);
 
 //Auth
 app.use("/api/v1/auth", authRoutes);

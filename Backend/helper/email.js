@@ -13,7 +13,7 @@ export const sendResetPasswordEmail = async ({ to, name, resetLink }) => {
 
   return await resend.emails.send({
     from: process.env.SENDER_EMAIL,
-    to: "ansari40953@gmail.com",
+    to,
     subject: "Reset your password",
     html,
   });
@@ -25,12 +25,13 @@ export const sendWelcomeEmail = async ({ to, name }) => {
 
   return await resend.emails.send({
     from: process.env.SENDER_EMAIL,
-    to: "ansari40953@gmail.com",
+    to,
     subject: "Welcome to App",
     html,
   });
 };
 
+// Sending account verification otp
 export const sendEmailOtp = async ({ to, name, otp }) => {
   let html = loadTemplate("../emails/verifyEmail.html");
   html = html.replace("{{name}}", name).replace("{{otp}}", otp);
@@ -38,7 +39,7 @@ export const sendEmailOtp = async ({ to, name, otp }) => {
   try {
     return await resend.emails.send({
       from: process.env.SENDER_EMAIL,
-      to: "ansari40953@gmail.com",
+      to,
       subject: "Email verification",
       html: html,
     });
@@ -58,7 +59,7 @@ export const sendResetSuccessEmail = async ({ to, loginUrl, name }) => {
   try {
     return await resend.emails.send({
       from: process.env.SENDER_EMAIL,
-      to: "ansari40953@gmail.com",
+      to,
       subject: "Your Password Was Reset Successfully",
       html,
     });
