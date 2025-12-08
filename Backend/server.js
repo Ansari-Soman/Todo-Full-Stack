@@ -34,9 +34,6 @@ app.use(cookieParser());
 connectDB();
 
 // RATE LIMIT FOR ALL API
-
-
-
 app.use(globalLimiter);
 
 //Auth

@@ -1,4 +1,9 @@
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouterProvider,
+} from "react-router-dom";
 import WebWrapper from "../Wrappers/WebWrapper";
 import Header from "../Components/common/Header";
 import Main from "../Pages/Todo/Main";
@@ -22,6 +27,7 @@ const AppRouter = () => {
     {
       element: <WebWrapper />,
       children: [
+        { path: "/", element: <Navigate to="/dashboard" /> },
         {
           element: <NonPrivateWrapper />,
           children: [
