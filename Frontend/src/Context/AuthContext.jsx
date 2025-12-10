@@ -20,8 +20,8 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       const response = await axiosInstance.get(API_PATH.AUTH.GET_USER_INFO);
-      if (response.data?.userData) {
-        login(response.data?.userData);
+      if (response?.userData) {
+        login(response?.userData);
       } else {
         throw new Error("Invalid response structure");
       }

@@ -22,16 +22,14 @@ const useAuthAction = () => {
         fullName,
         email,
       });
-
       // If success send the otp
-      if (response.data?.success === true) {
-        const response = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
+      if (response?.success === true) {
+        const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
           email,
         });
-
         if (
-          response?.data?.success === true &&
-          response?.data?.otpStatus === "sent"
+          otpResponse?.success === true &&
+          otpResponse?.otpStatus === "sent"
         ) {
           setUserEmail(email);
           setOtpStatus("sent");
@@ -42,11 +40,7 @@ const useAuthAction = () => {
       }
       return { success: false, error: "OTP sending failed" };
     } catch (error) {
-      console.log(error);
-      const errorMessage =
-        error.response?.data?.errors[0] ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      return { success: false, error: error.message };
     }
   };
 
@@ -57,18 +51,17 @@ const useAuthAction = () => {
         email,
         password,
       });
-
-      if (response?.data?.success === true && response?.data?.userData) {
-        login(response.data.userData);
+      console.log("login respone == ", response);
+      if (response?.success === true && response?.userData) {
+        login(response.userData);
         navigate("/");
+        toast.success(response.message);
       }
 
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.errors[0] ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      console.log("invalid == ", error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -81,25 +74,19 @@ const useAuthAction = () => {
         email: userEmail,
         otp,
       });
-      if (
-        response?.data?.success === true &&
-        response?.data?.otpStatus === "verified"
-      ) {
+      if (response?.success === true && response?.otpStatus === "verified") {
         setOtpStatus("verified");
         navigate("/set-password");
         toast.success("OTP verification successful.");
       }
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.errors[0] ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      return { success: false, error: error.message };
     }
   };
 
   // Set password
-  const registertPassword = async (password) => {
+  const registerPassword = async (password) => {
     if (!userEmail) return;
     try {
       const response = await axiosInstance.put(API_PATH.AUTH.SET_PASSWORD, {
@@ -107,21 +94,19 @@ const useAuthAction = () => {
         password,
       });
       if (
-        response?.data?.success === true &&
-        response?.data?.accountStatus === "activated"
+        response?.success === true &&
+        response?.accountStatus === "activated"
       ) {
         setAccountStatus("activated");
-        login(response.data.userData);
+        if (response.userData) {
+          login(response.userData);
+        }
         navigate("/");
         toast.success("Registration successful");
       }
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.errors[0] ||
-        error.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      return { success: false, error: error.message };
     }
   };
 
@@ -132,18 +117,14 @@ const useAuthAction = () => {
         API_PATH.AUTH.RESET_PASSWORD_LINK,
         { email }
       );
-      if (response?.data?.success === true) {
+      if (response?.success === true) {
         setResetEmailStatus("sent");
         navigate("/email-send");
         toast.success("Password reset link sent to your email");
       }
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.errors[0] ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      return { success: false, error: error.message };
     }
   };
 
@@ -154,16 +135,15 @@ const useAuthAction = () => {
         API_PATH.AUTH.VERIFY_RESET_TOKEN,
         { token }
       );
-      if (response?.data?.resetTokenStatus === "valid") {
+      if (response?.resetTokenStatus === "valid") {
         return { success: true };
       }
-      return { success: false, error: "Invalid or expired token" };
+      return {
+        success: false,
+        error: response.message || "Invalid or expired token",
+      };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.errors[0] ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      return { success: false, error: error.message };
     }
   };
 
@@ -174,24 +154,21 @@ const useAuthAction = () => {
         token,
         newPassword: password,
       });
-      if (response?.data?.success === true) {
+      if (response?.success === true) {
         navigate("/login");
         toast.success("Password reset successful");
       }
-      return { success: true };
+      return { success: response.success, error: response.message };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.errors[0] ||
-        "Something went wrong. Please try again.";
-      return { success: false, error: errorMessage };
+      return { success: false, error: error.message };
     }
   };
+
   return {
     registerUser,
     loginUser,
     verifyOtp,
-    registertPassword,
+    registerPassword,
     sendResetTokenLink,
     resetPassword,
     verifyResetToken,
