@@ -19,7 +19,7 @@ const app = express();
 //Middle to handle cors
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [process.env.CLIENT_URL, process.env.PROD_TEST],
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization"],

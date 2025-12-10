@@ -2,11 +2,8 @@ const errorHandler = (err, req, res, next) => {
   const statusCode =
     res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
 
-
   const isJSONError =
     err instanceof SyntaxError && err.status === 400 && "body" in err;
-
-
 
   if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
     return res.status(400).json({
