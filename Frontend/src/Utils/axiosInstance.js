@@ -23,21 +23,30 @@ axiosInstance.interceptors.request.use(
 // Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    return response;
+    console.log("Responsee =", response);
+    return response.data;
   },
 
   (error) => {
-    // Common error handling
-    if (error.response) {
-      if (error.response.status === 401) {
-        console.error(error.response.data.message);
-      } else if (error.response.status === 500) {
-        console.error("Server error. Please try again later");
-      }
+    const normalized = {
+      message: "Someting went wrong",
+      status: error?.response?.status ?? null,
+      raw: error,
+    };
+    if (error?.response?.data) {
+      normalized.message =
+        error.response.data.message ||
+        (Array.isArray(error.response.data.errors) &&
+          error.response.data.errors[0]) ||
+        normalized.message;
     } else if (error.code === "ECONNABORTED") {
-      console.error("Request timeout. Please try again");
+      normalized.message = "Request timeout. Please try again.";
+    } else if (!error.response) {
+      normalized.message =
+        error.message || "Network error. Please check your connection.";
     }
-    return Promise.reject(error);
+
+    return Promise.reject(normalized);
   }
 );
 
