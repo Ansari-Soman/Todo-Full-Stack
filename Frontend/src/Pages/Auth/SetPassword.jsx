@@ -10,7 +10,7 @@ const SetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState(null);
-  const { registertPassword } = useAuthAction();
+  const { registerPassword } = useAuthAction();
 
   const { userEmail } = useAuth();
 
@@ -41,7 +41,7 @@ const SetPassword = () => {
       return;
     }
 
-    const result = await registertPassword(password);
+    const result = await registerPassword(password);
     if (!result.success) {
       return setError(result.error);
     }

@@ -11,6 +11,7 @@ const ForgotPasswordEmail = () => {
     e.preventDefault();
     // Add your forgot password logic here
     const result = await sendResetTokenLink(email);
+    console.log("Result of email forgot == ", result);
     if (!result.success) {
       setError(result.error);
     }
@@ -65,7 +66,7 @@ const ForgotPasswordEmail = () => {
               />
             </div>
 
-            {error && <AuthError />}
+            {error && <AuthError error={error} />}
             {/* Submit Button */}
             <button
               type="submit"
