@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
 
 const EmailSent = () => {
+  const { userEmail } = useAuth();
   const handleResend = () => {
     // Add your resend email logic here
     console.log("Resend email");
@@ -36,7 +38,7 @@ const EmailSent = () => {
               We've sent a password reset link to
             </p>
             <p className="text-blue-600 font-semibold text-lg mt-2">
-              your@email.com
+              {userEmail}
             </p>
           </div>
 

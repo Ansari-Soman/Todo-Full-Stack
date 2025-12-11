@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import { useAuth } from "../../Context/AuthContext";
 import AuthError from "./AuthError";
+import toast from "react-hot-toast";
 
 const ResetPassword = () => {
   const [params] = useSearchParams();
@@ -39,10 +40,11 @@ const ResetPassword = () => {
     if (!allValid) {
       return;
     }
-    const result = await resetPassword(token, password);
-    if (!result.success) {
-      return setError(result.error);
+    const response = await resetPassword(token, password);
+    if (!response.success) {
+      return setError(response.error);
     }
+    toast.success(response.message)
   };
 
   return (

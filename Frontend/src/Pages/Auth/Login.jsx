@@ -5,6 +5,7 @@ import useAuthAction from "../../Hooks/useAuthAction";
 import { isValidEmail } from "../../Utils/validator";
 import { useAuth } from "../../Context/AuthContext";
 import AuthError from "./AuthError";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,10 +36,11 @@ const Login = () => {
     setError("");
 
     // Login API
-    const result = await loginUser(email, password);
-    if (!result.success) {
-      setError(result.error);
+    const response = await loginUser(email, password);
+    if (!response.success) {
+      return setError(response.error);
     }
+    toast.success(response.message);
   };
 
   return (

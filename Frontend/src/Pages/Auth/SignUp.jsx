@@ -4,6 +4,7 @@ import Input from "../../Components/common/Input";
 import useAuthAction from "../../Hooks/useAuthAction";
 import { isValidEmail } from "../../Utils/validator";
 import { useAuth } from "../../Context/AuthContext";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
   const { otpStatus } = useAuth();
@@ -37,12 +38,13 @@ const SignUp = () => {
     setError("");
 
     // SignUp API call
-    const result = await registerUser(fullName, email);
-    if (!result.success) {
-      setError(result.error);
+    const response = await registerUser(fullName, email);
+    if (!response.success) {
+      setError(response.error);
+      return;
     }
+    toast.success(response.message);
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-12">

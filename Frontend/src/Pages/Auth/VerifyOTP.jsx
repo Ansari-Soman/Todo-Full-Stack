@@ -34,11 +34,11 @@ const VerifyOTP = () => {
     e.preventDefault();
     // Add your OTP verification logic here
     const otpCode = otp.join("");
-    const result = await verifyOtp(otpCode);
-    if (!result.success) {
-      return setError(result.error);
+    const response = await verifyOtp(otpCode);
+    if (!response.success) {
+      return setError(response.error);
     }
-
+    toast.success(response.message);
   };
 
   const handleResend = () => {

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import AuthError from "./AuthError";
+import toast from "react-hot-toast";
 
 const ForgotPasswordEmail = () => {
   const [email, setEmail] = useState("");
@@ -10,11 +11,11 @@ const ForgotPasswordEmail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Add your forgot password logic here
-    const result = await sendResetTokenLink(email);
-    console.log("Result of email forgot == ", result);
-    if (!result.success) {
-      setError(result.error);
+    const response = await sendResetTokenLink(email);
+    if (!response.success) {
+      return setError(response.error);
     }
+    toast.success(response.message)
   };
 
   return (
