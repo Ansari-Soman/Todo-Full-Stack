@@ -10,65 +10,62 @@ const useTodoManager = () => {
   // Add one todo
   const addTodo = async (todoName, date) => {
     if (!todoName.trim() || !date) {
-      toast.error("All fields is required");
-      return;
+      return { success: false, error: "Name and date are required." };
     }
     try {
-      await axiosInstance.post(API_PATH.TODO.ADD_TODO, {
+      const response = await axiosInstance.post(API_PATH.TODO.ADD_TODO, {
         todoName,
         date,
       });
-      toast.success("Todo added successfully");
-      getAllTodos();
+      if (response.success) {
+        getAllTodos();
+        return { success: true, message: response.message };
+      }
     } catch (error) {
-      console.error(
-        "Error adding todo",
-        error.response?.data?.message || error.message
-      );
+      return { success: false, error: error.message };
     }
   };
 
   // Get All Todos
   const getAllTodos = async () => {
     try {
-      const allTodos = await axiosInstance.get(API_PATH.TODO.GET_ALL_TODO);
-      if (allTodos?.data?.todos) {
-        setTodoList(allTodos.data.todos);
+      const response = await axiosInstance.get(API_PATH.TODO.GET_ALL_TODO);
+      if (response.success && Array.isArray(response.todos)) {
+        setTodoList(response.todos);
         return;
       }
       setTodoList([]);
     } catch (error) {
-      console.error("Something went wrong. Please try again");
-    } 
+      return { success: false, error: error.message };
+    }
   };
 
   // Delete One todo
   const deleteTodo = async (id) => {
     try {
-      await axiosInstance.delete(API_PATH.TODO.DELETE_TODO(id));
-      toast.success("Todo deleted successfully");
-      getAllTodos();
-    } catch (error) {
-      console.error(
-        "Error deleting tod",
-        err.response?.data?.message || err.message
+      const response = await axiosInstance.delete(
+        API_PATH.TODO.DELETE_TODO(id)
       );
+      if (response.success) {
+        getAllTodos();
+
+        return { success: true, message: response.message };
+      }
+    } catch (error) {
+      return { success: false, error: error.message };
     }
   };
 
   // Update todo
   const updateTodo = async (id, completed) => {
-
     try {
-      await axiosInstance.put(API_PATH.TODO.UPDATE_TODO(id), {
+      const response = await axiosInstance.put(API_PATH.TODO.UPDATE_TODO(id), {
         completed,
       });
       getAllTodos();
+      return { success: true, message: response.message };
     } catch (error) {
-      console.error(
-        "Error updating todo: ",
-        error.response?.data?.message || error.message
-      );
+      return { success: false, error: error.message };
     }
   };
 
