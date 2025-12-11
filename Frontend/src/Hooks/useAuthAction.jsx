@@ -34,11 +34,10 @@ const useAuthAction = () => {
           setUserEmail(email);
           setOtpStatus("sent");
           navigate("/verify");
-          toast.success("OTP has been sent to your email successfully.");
-          return { success: true };
+          return { success: true, message: otpResponse.message };
         }
       }
-      return { success: false, error: "OTP sending failed" };
+      return { success: false, error: response.message };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -51,16 +50,12 @@ const useAuthAction = () => {
         email,
         password,
       });
-      console.log("login respone == ", response);
       if (response?.success === true && response?.userData) {
         login(response.userData);
         navigate("/");
-        toast.success(response.message);
+        return { success: true, message: response.message };
       }
-
-      return { success: true };
     } catch (error) {
-      console.log("invalid == ", error);
       return { success: false, error: error.message };
     }
   };
@@ -77,9 +72,8 @@ const useAuthAction = () => {
       if (response?.success === true && response?.otpStatus === "verified") {
         setOtpStatus("verified");
         navigate("/set-password");
-        toast.success("OTP verification successful.");
+        return { success: true, message: response.message };
       }
-      return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -102,9 +96,8 @@ const useAuthAction = () => {
           login(response.userData);
         }
         navigate("/");
-        toast.success("Registration successful");
+        return { success: true, message: response.message };
       }
-      return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -120,9 +113,9 @@ const useAuthAction = () => {
       if (response?.success === true) {
         setResetEmailStatus("sent");
         navigate("/email-send");
-        toast.success("Password reset link sent to your email");
+        setUserEmail(email);
+        return { success: true, message: response.message };
       }
-      return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -156,9 +149,8 @@ const useAuthAction = () => {
       });
       if (response?.success === true) {
         navigate("/login");
-        toast.success("Password reset successful");
+        return { success: true, error: response.message };
       }
-      return { success: response.success, error: response.message };
     } catch (error) {
       return { success: false, error: error.message };
     }
