@@ -6,6 +6,7 @@ import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useAuth } from "../Context/AuthContext";
 const WebWrapper = () => {
+  const { user, isAuthenticated } = useAuth();
   const [todoList, setTodoList] = useState([]);
   const [summary, setSummary] = useState({
     total: "",
@@ -13,7 +14,6 @@ const WebWrapper = () => {
     completed: "",
   });
   const [loading, setLoading] = useState(true);
-  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (!(user && isAuthenticated)) {
@@ -22,18 +22,18 @@ const WebWrapper = () => {
     }
     const getTodos = async () => {
       try {
+        setLoading(true);
         const response = await axiosInstance.get(API_PATH.TODO.GET_ALL_TODO);
         if (response?.todos) {
           setTodoList(response.todos);
         }
       } catch (error) {
-        // console.error(error.message);
       } finally {
         setLoading(false);
       }
     };
     getTodos();
-  }, []);
+  }, [user, isAuthenticated]);
 
   useEffect(() => {
     setSummary({

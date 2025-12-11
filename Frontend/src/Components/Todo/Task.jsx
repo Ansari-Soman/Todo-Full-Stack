@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
+import toast from "react-hot-toast";
 
 const Task = ({ todo, deleteTodo, updateTodo }) => {
   const { todoName, completed, date, _id } = todo;
-  const [checked, setChecked] = useState(completed);
 
-  const taskCompleted = () => {
-    setChecked(!checked);
+  const handleUpdateTodo = async () => {
+    todo.completed = !todo.completed;
+    const response = await updateTodo(_id, todo.completed);
+    if (!response.success) return toast.error(response.message);
   };
 
-  useEffect(() => {
-    updateTodo(_id, checked);
-  }, [checked]);
+  const handleDeleteTodo = async () => {
+    const response = await deleteTodo(_id);
+    if (!response.success) return toast.error(response.error);
+    toast.success(response.message);
+  };
 
   return (
     <div
       className={`
       bg-white rounded-xl shadow-sm hover:shadow-md 
       transition-all duration-200 mb-3 border-l-4
-      ${checked ? "border-green-500 bg-gray-50" : "border-blue-500"}
+      ${todo.completed ? "border-green-500 bg-gray-50" : "border-blue-500"}
     `}
     >
       <div className="flex justify-between items-center px-5 py-4">
@@ -28,8 +32,8 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
             <label className="relative flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={checked}
-                onChange={taskCompleted}
+                checked={todo.completed}
+                onChange={handleUpdateTodo}
                 className="sr-only peer"
               />
               <div
@@ -37,13 +41,13 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
                 w-6 h-6 border-2 rounded-md flex items-center justify-center
                 transition-all duration-200
                 ${
-                  checked
+                  todo.completed
                     ? "bg-green-500 border-green-500"
                     : "border-gray-300 hover:border-blue-500"
                 }
               `}
               >
-                {checked && (
+                {todo.completed && (
                   <svg
                     className="w-4 h-4 text-white"
                     fill="none"
@@ -68,7 +72,7 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
               className={`
               text-lg font-medium break-words
               transition-all duration-200
-              ${checked ? "line-through text-gray-400" : "text-gray-800"}
+              ${todo.completed ? "line-through text-gray-400" : "text-gray-800"}
             `}
             >
               {todoName}
@@ -97,7 +101,7 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
         {/* Delete Button */}
         <div className="flex-shrink-0 ml-4">
           <button
-            onClick={() => deleteTodo(_id)}
+            onClick={() => handleDeleteTodo()}
             className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium
                      hover:bg-red-600 active:bg-red-700
                      transition-colors duration-200 

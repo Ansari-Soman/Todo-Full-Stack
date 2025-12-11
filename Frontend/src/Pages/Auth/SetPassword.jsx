@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import useAuthAction from "../../Hooks/useAuthAction";
 import { useAuth } from "../../Context/AuthContext";
 import AuthError from "./AuthError";
 
@@ -10,7 +9,6 @@ const SetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState(null);
-  const { registerPassword } = useAuthAction();
 
   const { userEmail } = useAuth();
 
@@ -41,7 +39,7 @@ const SetPassword = () => {
       return;
     }
 
-    const result = await registerPassword(password);
+    const result = await registerPasswordgit (password);
     if (!result.success) {
       return setError(result.error);
     }

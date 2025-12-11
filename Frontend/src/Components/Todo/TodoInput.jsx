@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const Input = ({ addTodo }) => {
   const [todoName, setTodoName] = useState("");
   const [date, setDate] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleAddTodo = () => {
-    addTodo(todoName, date);
+  const handleAddTodo = async () => {
+    const response = await addTodo(todoName, date);
+    if (!response.success) toast.error(response.message);
+    toast.success(response.message);
     setTodoName("");
     setDate("");
   };
