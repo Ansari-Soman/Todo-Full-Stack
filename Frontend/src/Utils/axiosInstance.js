@@ -1,8 +1,8 @@
 import axios from "axios";
-import { BASE_URL } from "./apiPath";
+import { AppProperties } from "./AppProperties";
 
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: AppProperties.BASE_URL,
   timeout: 10000,
   withCredentials: true,
   headers: {
@@ -23,7 +23,6 @@ axiosInstance.interceptors.request.use(
 // Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log("Responsee =", response);
     return response.data;
   },
 
