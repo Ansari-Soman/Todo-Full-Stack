@@ -2,7 +2,6 @@ import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
-import toast from "react-hot-toast";
 
 const useAuthAction = () => {
   const {
@@ -24,9 +23,7 @@ const useAuthAction = () => {
       });
       // If success send the otp
       if (response?.success === true) {
-        const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
-          email,
-        });
+        const otpResponse = await sendOtp(email);
         if (
           otpResponse?.success === true &&
           otpResponse?.otpStatus === "sent"
@@ -54,6 +51,33 @@ const useAuthAction = () => {
         login(response.userData);
         navigate("/");
         return { success: true, message: response.message };
+      }
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  const logoutUser = async () => {
+    try {
+      const response = await axiosInstance.post(API_PATH.AUTH.LOGOUT);
+      if (response?.success) {
+        return {
+          success: true,
+          message: response.message,
+        };
+      }
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  const sendOtp = async (email) => {
+    try {
+      const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
+        email,
+      });
+      if (otpResponse?.success === true && otpResponse?.otpStatus === "sent") {
+        return { success: true, message: otpResponse.message };
       }
     } catch (error) {
       return { success: false, error: error.message };
@@ -149,7 +173,7 @@ const useAuthAction = () => {
       });
       if (response?.success === true) {
         navigate("/login");
-        return { success: true, error: response.message };
+        return { success: true, message: response.message };
       }
     } catch (error) {
       return { success: false, error: error.message };
@@ -164,6 +188,7 @@ const useAuthAction = () => {
     sendResetTokenLink,
     resetPassword,
     verifyResetToken,
+    logoutUser,
   };
 };
 

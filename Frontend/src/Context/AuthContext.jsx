@@ -4,6 +4,9 @@ import { createContext } from "react";
 import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useContext } from "react";
+import { checkUser } from "../Services/authService";
+import useAuthAction from "../Hooks/useAuthAction";
+import { resetLogoutStatus, setLogoutHandler } from "../Services/authEvents";
 
 const AuthContext = createContext(null);
 
@@ -17,28 +20,22 @@ export const AuthProvider = ({ children }) => {
   const [accountStatus, setAccountStatus] = useState(null);
   const [resetTokenStatus, setResetTokenStatus] = useState(null);
 
-  const checkAuth = async () => {
-    try {
-      const response = await axiosInstance.get(API_PATH.AUTH.GET_USER_INFO);
-      if (response?.userData) {
-        login(response?.userData);
-      } else {
-        throw new Error("Invalid response structure");
-      }
-    } catch (error) {
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    checkAuth();
+    const checkSession = async () => {
+      const response = await checkUser();
+      if (response.success) {
+        login(response.userData);
+      }
+      setLoading(false);
+    };
+    setLogoutHandler(logout); 
+    checkSession();
   }, []);
 
   const login = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);
+    resetLogoutStatus();
   };
 
   const logout = () => {

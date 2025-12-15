@@ -1,24 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
-import axiosInstance from "../../Utils/axiosInstance";
-import { API_PATH } from "../../Utils/apiPath";
 import { useState } from "react";
 import LogoutConfirmationModal from "./LogoutConfirmationModal";
+import useAuthAction from "../../Hooks/useAuthAction";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
+  const { logoutUser } = useAuthAction();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleLogout = async () => {
-    try {
-      await axiosInstance.post(API_PATH.AUTH.LOGOUT);
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      logout();
-      navigate("/login");
+    const response = await logoutUser();
+    if (!response.success) {
+      return toast.error(response.error);
     }
+    logout();
+    navigate("/login");
+    toast.success(response.message);
   };
+
   return (
     <header className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">

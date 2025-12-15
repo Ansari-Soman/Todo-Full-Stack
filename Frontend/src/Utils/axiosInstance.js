@@ -1,5 +1,6 @@
 import axios from "axios";
 import { AppProperties } from "./AppProperties";
+import { callLogoutHandler } from "../Services/authEvents";
 
 const axiosInstance = axios.create({
   baseURL: AppProperties.BASE_URL,
@@ -32,7 +33,12 @@ axiosInstance.interceptors.response.use(
       status: error?.response?.status ?? null,
       raw: error,
     };
-    if (error?.response?.data) {
+    if (error.response?.status === 401) {
+      const didLogout = callLogoutHandler();
+      if (didLogout) {
+        window.location.replace("/login");
+      }
+    } else if (error?.response?.data) {
       normalized.message =
         error.response.data.message ||
         (Array.isArray(error.response.data.errors) &&

@@ -6,9 +6,8 @@ const errorHandler = (err, req, res, next) => {
     err instanceof SyntaxError && err.status === 400 && "body" in err;
 
   if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
-      resetTokenStatus: "invalid",
       message: "Invalid or expired reset token",
     });
   }

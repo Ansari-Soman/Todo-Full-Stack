@@ -117,3 +117,4 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
 };
 
 export default Task;
+
