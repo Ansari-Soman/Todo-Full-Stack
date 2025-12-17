@@ -33,12 +33,14 @@ axiosInstance.interceptors.response.use(
       status: error?.response?.status ?? null,
       raw: error,
     };
-    if (error.response?.status === 401) {
-      const didLogout = callLogoutHandler();
-      if (didLogout) {
-        window.location.replace("/login");
-      }
-    } else if (error?.response?.data) {
+    // if (error.response?.status === 401) {
+    //   const didLogout = callLogoutHandler();
+    //   if (didLogout?.success && !window.location.href.includes("/login")) {
+    //     console.log("if");
+    //     window.location.replace("/login");
+    //   }
+    // }
+    if (error?.response?.data) {
       normalized.message =
         error.response.data.message ||
         (Array.isArray(error.response.data.errors) &&
