@@ -29,7 +29,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   let user = await User.findOne({ email });
 
   if (user && user.isAccountVerified) {
-    res.status(400);
+    res.status(409);
     throw new Error("A verified account already exists with this email.");
   }
 
@@ -63,7 +63,7 @@ export const sendVerifyEmailOtp = asyncHandler(async (req, res) => {
   }
 
   if (user.isAccountVerified) {
-    res.status(400);
+    res.status(409);
     throw new Error("Account is already verified");
   }
 
@@ -96,13 +96,13 @@ export const checkVerifyEmailOtp = asyncHandler(async (req, res) => {
   }
 
   if (user.isAccountVerified) {
-    res.status(400);
+    res.status(409);
     throw new Error("Account is already verified");
   }
 
   // Checking expiration time
   if (user.verifyOtpExpiredAt && user.verifyOtpExpiredAt < new Date()) {
-    res.status(400);
+    res.status(403);
     throw new Error("OTP expired");
   }
 
@@ -110,7 +110,7 @@ export const checkVerifyEmailOtp = asyncHandler(async (req, res) => {
   if (!(await bcrypt.compare(otp, user.verifyOtp))) {
     user.otpAttemptCount += 1;
     await user.save();
-    res.status(400);
+    res.status(401);
     throw new Error("Invalid OTP");
   }
 
@@ -135,12 +135,12 @@ export const setUserPassword = asyncHandler(async (req, res) => {
   }
 
   if (!user.isAccountVerified) {
-    res.status(400);
+    res.status(401);
     throw new Error("Account is not verified");
   }
 
   if (user.password !== "") {
-    res.status(400);
+    res.status(409);
     throw new Error("Cannot set password. A password already exists.");
   }
 
@@ -237,7 +237,7 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
   }
 
   if (!user.isAccountVerified) {
-    res.status(400);
+    res.status(401);
     throw new Error("Account is not verified");
   }
 
@@ -271,7 +271,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   }
 
   if (!user.isAccountVerified) {
-    res.status(400);
+    res.status(401);
     throw new Error("Account is not verified");
   }
 
