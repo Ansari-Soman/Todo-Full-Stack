@@ -42,7 +42,7 @@ const ResetPassword = () => {
     }
     const response = await resetPassword(token, password);
     if (!response.success) {
-      return setError(response.error);
+      return setError(response.message);
     }
     toast.success(response.message)
   };

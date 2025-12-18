@@ -3,13 +3,13 @@ import { useAuth } from "../../Context/AuthContext";
 import Loading from "../common/Loading";
 
 const SetPasswordProtectedRoute = ({ children }) => {
-  const { otpStatus, loading } = useAuth();
+  const { otpStatus, loading, userEmail } = useAuth();
   if (loading) {
     return <Loading />;
   }
 
   // Only allow access if OTP is verified
-  if (otpStatus !== "verified") {
+  if (!userEmail && otpStatus !== "verified") {
     return <Navigate to="/verify" replace />;
   }
 

@@ -2,6 +2,8 @@ import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import { handleRequest } from "../Utils/handleRequest";
+import { AppError } from "../Utils/AppError";
 
 const useAuthAction = () => {
   const {
@@ -15,170 +17,125 @@ const useAuthAction = () => {
   const navigate = useNavigate();
 
   // Register user
-  const registerUser = async (fullName, email) => {
-    try {
-      const response = await axiosInstance.post(API_PATH.AUTH.REGISTER, {
-        fullName,
-        email,
-      });
-      // If success send the otp
-      if (response?.success === true) {
-        const otpResponse = await sendOtp(email);
-        if (
-          otpResponse?.success === true &&
-          otpResponse?.otpStatus === "sent"
-        ) {
-          setUserEmail(email);
-          setOtpStatus("sent");
-          navigate("/verify");
-          return { success: true, message: otpResponse.message };
-        }
-      }
-      return { success: false, error: response.message };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
+  const registerUser = handleRequest(async (fullName, email) => {
+    const response = await axiosInstance.post(API_PATH.AUTH.REGISTER, {
+      fullName,
+      email,
+    });
+
+    setUserEmail(email);
+    // If success send the otp
+    const otpResponse = await sendOtp(email);
+    setOtpStatus("sent");
+    navigate("/verify");
+    return { success: true, message: otpResponse.message };
+  });
 
   // Login user
-  const loginUser = async (email, password) => {
-    try {
-      const response = await axiosInstance.post(API_PATH.AUTH.LOGIN, {
-        email,
-        password,
-      });
-      if (response?.success === true && response?.userData) {
-        login(response.userData);
-        navigate("/");
-        return { success: true, message: response.message };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
+  const loginUser = handleRequest(async (email, password) => {
+    const response = await axiosInstance.post(API_PATH.AUTH.LOGIN, {
+      email,
+      password,
+    });
+    if (!response?.userData) {
+      throw new AppError("Login response missing userData");
     }
-  };
+    login(response.userData);
+    navigate("/dashborad", { replace: true });
+    return { success: true, message: response.message };
+  });
 
-  const logoutUser = async () => {
-    try {
-      const response = await axiosInstance.post(API_PATH.AUTH.LOGOUT);
-      if (response?.success) {
-        return {
-          success: true,
-          message: response.message,
-        };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
+  const logoutUser = handleRequest(async () => {
+    const response = await axiosInstance.post(API_PATH.AUTH.LOGOUT);
+    logout();
+    navigate("/login", { replace: true });
+    return {
+      success: true,
+      message: response.message,
+    };
+  });
 
-  const sendOtp = async (email) => {
-    try {
-      const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
-        email,
+  const sendOtp = handleRequest(async (email) => {
+    const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
+      email,
+    });
+    if (otpResponse?.otpStatus !== "sent") {
+      throw new AppError("Otp status is not sent", {
+        userMessage: "Failed to send the OTP",
       });
-      if (otpResponse?.success === true && otpResponse?.otpStatus === "sent") {
-        return { success: true, message: otpResponse.message };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
     }
-  };
+
+    return { success: true, message: otpResponse.message };
+  });
 
   // Verifying otp
-  const verifyOtp = async (otp) => {
-    if (!userEmail) return;
+  const verifyOtp = handleRequest(async (otp) => {
+    if (!userEmail) throw new AppError("verifyOtp called without userEmail");
 
-    try {
-      const response = await axiosInstance.post(API_PATH.AUTH.VERIFY_OTP, {
-        email: userEmail,
-        otp,
+    const response = await axiosInstance.post(API_PATH.AUTH.VERIFY_OTP, {
+      email: userEmail,
+      otp,
+    });
+
+    if (response?.otpStatus !== "verified") {
+      throw new AppError("Otp verification failed", {
+        userMessage: "Invalid OTP",
       });
-      if (response?.success === true && response?.otpStatus === "verified") {
-        setOtpStatus("verified");
-        navigate("/set-password");
-        return { success: true, message: response.message };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
     }
-  };
+
+    setOtpStatus("verified");
+    navigate("/set-password");
+    return { success: true, message: response.message };
+  });
 
   // Set password
-  const registerPassword = async (password) => {
-    if (!userEmail) return;
-    try {
-      const response = await axiosInstance.put(API_PATH.AUTH.SET_PASSWORD, {
-        email: userEmail,
-        password,
-      });
-      if (
-        response?.success === true &&
-        response?.accountStatus === "activated"
-      ) {
-        setAccountStatus("activated");
-        if (response.userData) {
-          login(response.userData);
-        }
-        navigate("/");
-        return { success: true, message: response.message };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
+  const registerPassword = handleRequest(async (password) => {
+    if (!userEmail)
+      throw new AppError("registerPassword called without userEmail");
+
+    const response = await axiosInstance.put(API_PATH.AUTH.SET_PASSWORD, {
+      email: userEmail,
+      password,
+    });
+    if (response?.accountStatus !== "activated") {
+      throw new AppError("accountStatus is not activated");
     }
-  };
+    setAccountStatus("activated");
+    login(response.userData);
+    navigate("/dashboard", { replace: true });
+    return { success: true, message: response.message };
+  });
 
   // Send reset token
-  const sendResetTokenLink = async (email) => {
-    try {
-      const response = await axiosInstance.post(
-        API_PATH.AUTH.RESET_PASSWORD_LINK,
-        { email }
-      );
-      if (response?.success === true) {
-        setResetEmailStatus("sent");
-        navigate("/email-send");
-        setUserEmail(email);
-        return { success: true, message: response.message };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
+  const sendResetTokenLink = handleRequest(async (email) => {
+    const response = await axiosInstance.post(
+      API_PATH.AUTH.RESET_PASSWORD_LINK,
+      { email }
+    );
+    setResetEmailStatus("sent");
+    navigate("/email-send");
+    setUserEmail(email);
+    return { success: true, message: response.message };
+  });
 
   // Verify reset token
-  const verifyResetToken = async (token) => {
-    try {
-      const response = await axiosInstance.post(
-        API_PATH.AUTH.VERIFY_RESET_TOKEN,
-        { token }
-      );
-      if (response?.resetTokenStatus === "valid") {
-        return { success: true };
-      }
-      return {
-        success: false,
-        error: response.message || "Invalid or expired token",
-      };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
+  const verifyResetToken = handleRequest(async (token) => {
+    const response = await axiosInstance.post(
+      API_PATH.AUTH.VERIFY_RESET_TOKEN,
+      { token }
+    );
+    return { success: true };
+  });
 
   // Reset password
-  const resetPassword = async (token, password) => {
-    try {
-      const response = await axiosInstance.put(API_PATH.AUTH.RESET_PASSWORD, {
-        token,
-        newPassword: password,
-      });
-      if (response?.success === true) {
-        navigate("/login");
-        return { success: true, message: response.message };
-      }
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
+  const resetPassword = handleRequest(async (token, password) => {
+    const response = await axiosInstance.put(API_PATH.AUTH.RESET_PASSWORD, {
+      token,
+      newPassword: password,
+    });
+    navigate("/login");
+    return { success: true, message: response.message };
+  });
 
   return {
     registerUser,

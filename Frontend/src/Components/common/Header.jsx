@@ -14,10 +14,8 @@ const Header = () => {
   const handleLogout = async () => {
     const response = await logoutUser();
     if (!response.success) {
-      return toast.error(response.error);
+      return toast.error(response.message);
     }
-    logout();
-    navigate("/login");
     toast.success(response.message);
   };
 

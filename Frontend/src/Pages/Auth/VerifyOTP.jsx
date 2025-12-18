@@ -36,7 +36,7 @@ const VerifyOTP = () => {
     const otpCode = otp.join("");
     const response = await verifyOtp(otpCode);
     if (!response.success) {
-      return setError(response.error);
+      return setError(response.message);
     }
     toast.success(response.message);
   };

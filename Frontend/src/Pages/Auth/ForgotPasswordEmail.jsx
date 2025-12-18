@@ -13,7 +13,7 @@ const ForgotPasswordEmail = () => {
     // Add your forgot password logic here
     const response = await sendResetTokenLink(email);
     if (!response.success) {
-      return setError(response.error);
+      return setError(response.message);
     }
     toast.success(response.message)
   };

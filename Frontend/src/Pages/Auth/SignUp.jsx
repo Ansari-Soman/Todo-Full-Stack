@@ -40,7 +40,7 @@ const SignUp = () => {
     // SignUp API call
     const response = await registerUser(fullName, email);
     if (!response.success) {
-      setError(response.error);
+      setError(response.message);
       return;
     }
     toast.success(response.message);

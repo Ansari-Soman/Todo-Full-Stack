@@ -36,11 +36,11 @@ const Login = () => {
     setError("");
 
     // Login API
-    const response = await loginUser(email, password);
-    if (!response.success) {
-      return setError(response.error);
+    const { success, message } = await loginUser(email, password);
+    if (!success) {
+      return setError(message);
     }
-    toast.success(response.message);
+    toast.success(message);
   };
 
   return (
