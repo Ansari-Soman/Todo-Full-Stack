@@ -7,9 +7,9 @@ const Input = ({ addTodo }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleAddTodo = async () => {
-    const response = await addTodo(todoName, date);
-    if (!response.success) toast.error(response.message);
-    toast.success(response.message);
+    const { success, message } = await addTodo(todoName, date);
+    if (!success) toast.error(message);
+    toast.success(message);
     setTodoName("");
     setDate("");
   };

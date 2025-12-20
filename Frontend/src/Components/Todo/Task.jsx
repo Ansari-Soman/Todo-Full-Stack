@@ -7,14 +7,14 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
 
   const handleUpdateTodo = async () => {
     todo.completed = !todo.completed;
-    const response = await updateTodo(_id, todo.completed);
-    if (!response.success) return toast.error(response.message);
+    const { success, message } = await updateTodo(_id, todo.completed);
+    if (!success) return toast.error(message);
   };
 
   const handleDeleteTodo = async () => {
-    const response = await deleteTodo(_id);
-    if (!response.success) return toast.error(response.error);
-    toast.success(response.message);
+    const { success, message } = await deleteTodo(_id);
+    if (!success) return toast.error(message);
+    toast.success(message);
   };
 
   return (
@@ -117,4 +117,3 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
 };
 
 export default Task;
-
