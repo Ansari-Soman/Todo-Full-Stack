@@ -3,13 +3,13 @@ import { useAuth } from "../../Context/AuthContext";
 import Loading from "../common/Loading";
 
 const OTPProtectedRoute = ({ children }) => {
-  const { otpStatus, loading, userEmail } = useAuth();
+  const { authState, loading } = useAuth();
   if (loading) {
     return <Loading />;
   }
 
   // Only allow if OTP was sent
-  if (!userEmail && otpStatus !== "sent" && otpStatus !== "verified") {
+  if (authState !== "OTP_SENT") {
     return <Navigate to="/signup" replace />;
   }
 

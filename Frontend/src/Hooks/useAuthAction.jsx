@@ -2,7 +2,7 @@ import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
-import { handleRequest } from "../Utils/handleRequest";
+import { handleApiRequest } from "../Utils/handleApiRequest";
 import { AppError } from "../Utils/AppError";
 
 const useAuthAction = () => {
@@ -13,26 +13,26 @@ const useAuthAction = () => {
     userEmail,
     setUserEmail,
     setResetEmailStatus,
+    logout,
+    handleAuthState,
+    pendingUserData,
+    setPendingUserData,
   } = useAuth();
   const navigate = useNavigate();
 
   // Register user
-  const registerUser = handleRequest(async (fullName, email) => {
+  const registerUser = handleApiRequest(async (fullName, email) => {
     const response = await axiosInstance.post(API_PATH.AUTH.REGISTER, {
       fullName,
       email,
     });
-
     setUserEmail(email);
-    // If success send the otp
-    const otpResponse = await sendOtp(email);
-    setOtpStatus("sent");
-    navigate("/verify");
-    return { success: true, message: otpResponse.message };
+    handleAuthState("REGISTER_SUCCESSs");
+    return { success: true, message: response.message };
   });
 
   // Login user
-  const loginUser = handleRequest(async (email, password) => {
+  const loginUser = handleApiRequest(async (email, password) => {
     const response = await axiosInstance.post(API_PATH.AUTH.LOGIN, {
       email,
       password,
@@ -40,22 +40,22 @@ const useAuthAction = () => {
     if (!response?.userData) {
       throw new AppError("Login response missing userData");
     }
-    login(response.userData);
-    navigate("/dashborad", { replace: true });
+    handleAuthState("LOGIN_SUCCESS");
+    setPendingUserData(response.userData);
     return { success: true, message: response.message };
   });
 
-  const logoutUser = handleRequest(async () => {
+  const logoutUser = handleApiRequest(async () => {
     const response = await axiosInstance.post(API_PATH.AUTH.LOGOUT);
-    logout();
-    navigate("/login", { replace: true });
+    handleAuthState("LOGOUT_SUCCESS");
     return {
       success: true,
       message: response.message,
     };
   });
 
-  const sendOtp = handleRequest(async (email) => {
+  const sendOtp = handleApiRequest(async (email) => {
+    if (!userEmail) throw new AppError("verifyOtp called without userEmail");
     const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
       email,
     });
@@ -64,12 +64,13 @@ const useAuthAction = () => {
         userMessage: "Failed to send the OTP",
       });
     }
+    handleAuthState("OTP_SENT_SUCCESS");
 
     return { success: true, message: otpResponse.message };
   });
 
   // Verifying otp
-  const verifyOtp = handleRequest(async (otp) => {
+  const verifyOtp = handleApiRequest(async (otp) => {
     if (!userEmail) throw new AppError("verifyOtp called without userEmail");
 
     const response = await axiosInstance.post(API_PATH.AUTH.VERIFY_OTP, {
@@ -82,14 +83,12 @@ const useAuthAction = () => {
         userMessage: "Invalid OTP",
       });
     }
-
-    setOtpStatus("verified");
-    navigate("/set-password");
+    handleAuthState("OTP_VERIFIED_SUCCESS");
     return { success: true, message: response.message };
   });
 
   // Set password
-  const registerPassword = handleRequest(async (password) => {
+  const registerPassword = handleApiRequest(async (password) => {
     if (!userEmail)
       throw new AppError("registerPassword called without userEmail");
 
@@ -100,26 +99,26 @@ const useAuthAction = () => {
     if (response?.accountStatus !== "activated") {
       throw new AppError("accountStatus is not activated");
     }
-    setAccountStatus("activated");
-    login(response.userData);
-    navigate("/dashboard", { replace: true });
+    handleAuthState("PASSWORD_SET_SUCCESS");
+    setPendingUserData(response.userData);
+
     return { success: true, message: response.message };
   });
 
   // Send reset token
-  const sendResetTokenLink = handleRequest(async (email) => {
+  const sendResetTokenLink = handleApiRequest(async (email) => {
     const response = await axiosInstance.post(
       API_PATH.AUTH.RESET_PASSWORD_LINK,
       { email }
     );
-    setResetEmailStatus("sent");
-    navigate("/email-send");
     setUserEmail(email);
+    z;
+    handleAuthState("RESET_LINK_SENT_SUCCESS");
     return { success: true, message: response.message };
   });
 
   // Verify reset token
-  const verifyResetToken = handleRequest(async (token) => {
+  const verifyResetToken = handleApiRequest(async (token) => {
     const response = await axiosInstance.post(
       API_PATH.AUTH.VERIFY_RESET_TOKEN,
       { token }
@@ -128,12 +127,12 @@ const useAuthAction = () => {
   });
 
   // Reset password
-  const resetPassword = handleRequest(async (token, password) => {
+  const resetPassword = handleApiRequest(async (token, password) => {
     const response = await axiosInstance.put(API_PATH.AUTH.RESET_PASSWORD, {
       token,
       newPassword: password,
     });
-    navigate("/login");
+    handleAuthState("NEW_PASSWORD_SUCCESS");
     return { success: true, message: response.message };
   });
 
@@ -146,6 +145,7 @@ const useAuthAction = () => {
     resetPassword,
     verifyResetToken,
     logoutUser,
+    sendOtp,
   };
 };
 

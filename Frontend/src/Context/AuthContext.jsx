@@ -1,17 +1,19 @@
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
-import axiosInstance from "../Utils/axiosInstance";
-import { API_PATH } from "../Utils/apiPath";
 import { useContext } from "react";
 import { checkUser } from "../Services/authService";
-import useAuthAction from "../Hooks/useAuthAction";
 import { resetLogoutStatus, setLogoutHandler } from "../Services/authEvents";
+import { authStateMachine } from "../Services/authStateMachine";
+import { Outlet } from "react-router-dom";
+import { AppProperties } from "../Utils/AppProperties";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState("IDLEE");
   const [userEmail, setUserEmail] = useState(null);
+  const [pendingUserData, setPendingUserData] = useState(null);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [resetEmailStatus, setResetEmailStatus] = useState(null);
   const [accountStatus, setAccountStatus] = useState(null);
   const [resetTokenStatus, setResetTokenStatus] = useState(null);
-
+  const [authRecovery, setAuthRecovery] = useState(null);
   useEffect(() => {
     const checkSession = async () => {
       const response = await checkUser();
@@ -28,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false);
     };
-    setLogoutHandler(logout); 
+    setLogoutHandler(logout);
     checkSession();
   }, []);
 
@@ -41,6 +43,31 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
+  };
+
+  const resetAllState = () => {
+    setAuthState("IDLE");
+    setUserEmail(null);
+    setUser(null);
+    setIsAuthenticated(false);
+    setOtpStatus(null);
+    setResetEmailStatus(null);
+    setAccountStatus(null);
+    setResetTokenStatus(null);
+  };
+
+  const handleAuthState = (next) => {
+    try {
+      const nextState = authStateMachine(authState, next);
+      setAuthState(nextState);
+    } catch (error) {
+      if (AppProperties.MODE === "development") {
+        console.log("State machine error == ", error);
+      }
+      resetAllState();
+      setAuthRecovery("INVALID_TRANSITION");
+      throw error;
+    }
   };
 
   return (
@@ -61,9 +88,17 @@ export const AuthProvider = ({ children }) => {
         setUserEmail,
         resetEmailStatus,
         setResetEmailStatus,
+        authState,
+        setAuthState,
+        handleAuthState,
+        resetAllState,
+        pendingUserData,
+        setPendingUserData,
+        authRecovery,
+        setAuthRecovery,
       }}
     >
-      {children}
+      <Outlet />
     </AuthContext.Provider>
   );
 };

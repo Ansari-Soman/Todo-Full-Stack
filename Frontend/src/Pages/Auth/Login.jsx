@@ -37,9 +37,6 @@ const Login = () => {
 
     // Login API
     const { success, message } = await loginUser(email, password);
-    if (!success) {
-      return setError(message);
-    }
     toast.success(message);
   };
 

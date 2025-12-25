@@ -14,11 +14,11 @@ const SignUp = () => {
 
   const navigate = useNavigate();
   const { registerUser } = useAuthAction();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, authState } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
 

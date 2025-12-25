@@ -4,7 +4,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import rateLimit from "express-rate-limit";
 
 // Local Module
 import connectDB from "./Config/db.js";

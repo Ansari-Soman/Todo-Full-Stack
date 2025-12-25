@@ -1,13 +1,13 @@
 import { AppError } from "./AppError";
 import { AppProperties } from "./AppProperties";
 
-export const handleRequest = (fn) => {
+export const handleApiRequest = (fn) => {
   return async (...args) => {
     try {
       return await fn(...args);
     } catch (error) {
       if (AppProperties.MODE === "development") {
-        console.log("Error == ", error);
+        console.log("APi Error == ", error);
       }
 
       const isAppError = error instanceof AppError;

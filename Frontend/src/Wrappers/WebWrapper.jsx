@@ -5,8 +5,9 @@ import Loading from "../Components/common/Loading";
 import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
 import { useAuth } from "../Context/AuthContext";
+import useAuthFlowHandler from "../Hooks/useAuthFlowHandler";
 const WebWrapper = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, authState } = useAuth();
   const [todoList, setTodoList] = useState([]);
   const [summary, setSummary] = useState({
     total: "",
@@ -42,6 +43,7 @@ const WebWrapper = () => {
       completed: todoList.filter((todo) => todo.completed === true).length,
     });
   }, [todoList]);
+  useAuthFlowHandler();
 
   if (loading) return <Loading />;
   return (

@@ -81,7 +81,7 @@ const InvalidToken = () => {
             </button>
 
             <Link
-            to='/login'
+              to="/login"
               className="w-full flex items-center justify-center px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg
                          shadow-sm hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
             >

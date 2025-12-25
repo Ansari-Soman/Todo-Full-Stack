@@ -1,7 +1,6 @@
 import {
   createBrowserRouter,
   Navigate,
-  Outlet,
   RouterProvider,
 } from "react-router-dom";
 import WebWrapper from "../Wrappers/WebWrapper";
@@ -21,80 +20,91 @@ import NonPrivateWrapper from "../Wrappers/NonPrivateWrapper";
 import PrivateWrapper from "../Wrappers/PrivateWrapper";
 import EmailSendProtected from "../Components/Protected Wrapper/EmailSendProtected";
 import ForgotPasswordEmail from "../Pages/Auth/ForgotPasswordEmail";
+import InvalidTransition from "../Components/common/InvalidTransition";
+import { AuthProvider } from "../Context/AuthContext";
 
 const AppRouter = () => {
   const router = createBrowserRouter([
     {
-      element: <WebWrapper />,
+      element: <AuthProvider />,
       children: [
-        { path: "/", element: <Navigate to="/dashboard" /> },
         {
-          element: <NonPrivateWrapper />,
+          element: <WebWrapper />,
           children: [
+            { path: "/", element: <Navigate to="/dashboard" /> },
             {
-              path: "/signup",
-              element: <SignUp />,
-            },
-            {
-              path: "/login",
-              element: <Login />,
-            },
-            {
-              path: "/verify",
-              element: (
-                <OTPProtectedRoute>
-                  <VerifyOTP />
-                </OTPProtectedRoute>
-              ),
-            },
-            {
-              path: "/email-send",
-              element: (
-                <EmailSendProtected>
-                  <EmailSent />
-                </EmailSendProtected>
-              ),
-            },
-            {
-              path: "/set-password",
-              element: (
-                <SetPasswordProtectedRoute>
-                  <SetPassword />
-                </SetPasswordProtectedRoute>
-              ),
-            },
+              element: <NonPrivateWrapper />,
+              children: [
+                {
+                  path: "/signup",
+                  element: <SignUp />,
+                },
+                {
+                  path: "/login",
+                  element: <Login />,
+                },
+                {
+                  path: "/verify",
+                  element: (
+                    <OTPProtectedRoute>
+                      <VerifyOTP />
+                    </OTPProtectedRoute>
+                  ),
+                },
+                {
+                  path: "/email-send",
+                  element: (
+                    <EmailSendProtected>
+                      <EmailSent />
+                    </EmailSendProtected>
+                  ),
+                },
+                {
+                  path: "/set-password",
+                  element: (
+                    <SetPasswordProtectedRoute>
+                      <SetPassword />
+                    </SetPasswordProtectedRoute>
+                  ),
+                },
 
-            {
-              path: "/reset-password",
-              element: (
-                <ResetPasswordProtectedRoute>
-                  <ResetPassword />
-                </ResetPasswordProtectedRoute>
-              ),
+                {
+                  path: "/reset-password",
+                  element: (
+                    <ResetPasswordProtectedRoute>
+                      <ResetPassword />
+                    </ResetPasswordProtectedRoute>
+                  ),
+                },
+                {
+                  path: "/forgot-password",
+                  element: <ForgotPasswordEmail />,
+                },
+                {
+                  path: "/invalid-transition",
+                  element: <InvalidTransition />,
+                },
+              ],
             },
             {
-              path: "/forgot-password",
-              element: <ForgotPasswordEmail />,
+              element: <PrivateWrapper />,
+              children: [
+                {
+                  path: "/dashboard",
+                  element: (
+                    <>
+                      <Header />
+                      <Main />
+                    </>
+                  ),
+                },
+              ],
+            },
+            {
+              path: "*",
+              element: <NotFound />,
             },
           ],
-        },
-        {
-          element: <PrivateWrapper />,
-          children: [
-            {
-              path: "/dashboard",
-              element: (
-                <>
-                  <Header />
-                  <Main />
-                </>
-              ),
-            },
-          ],
-        },
-        {
-          path: "*",
-          element: <NotFound />,
         },
       ],
     },

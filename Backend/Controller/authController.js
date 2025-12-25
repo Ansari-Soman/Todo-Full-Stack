@@ -48,7 +48,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   return res.status(201).json({
     success: true,
-    message: "User created. Please proceed to OTP verification.",
+    message: "Account created. Please proceed to OTP verification.",
   });
 });
 
@@ -173,7 +173,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   // Cheking user and password
   if (!user || !(await user.comparePassword(password))) {
-    res.status(401)
+    res.status(401);
     throw new Error("Invalid credentials");
   }
 

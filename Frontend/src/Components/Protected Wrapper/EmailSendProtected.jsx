@@ -4,10 +4,10 @@ import Loading from "../common/Loading";
 import { Navigate } from "react-router-dom";
 
 const EmailSendProtected = ({ children }) => {
-  const { loading, resetEmailStatus } = useAuth();
+  const { loading, authState } = useAuth();
   if (loading) return <Loading />;
   // Only allow if OTP was sent
-  if (resetEmailStatus !== "sent") {
+  if (authState !== "NEW_PASSWORD_REQUIRED") {
     return <Navigate to="/signup" replace />;
   }
 
