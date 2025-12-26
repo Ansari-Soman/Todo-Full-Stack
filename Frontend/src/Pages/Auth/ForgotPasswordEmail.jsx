@@ -15,6 +15,7 @@ const ForgotPasswordEmail = () => {
     if (!success) {
       return setError(message);
     }
+    setError(null);
     toast.success(message);
   };
 

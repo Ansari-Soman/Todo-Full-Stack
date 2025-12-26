@@ -40,12 +40,10 @@ const VerifyOTP = () => {
       return setError(message);
     }
     setError("");
-    toast.success(response.message);
+    toast.success(message);
   };
 
   const handleResend = async () => {
-    // Add your resend OTP logic here
-    console.log("Resend OTP");
     const { success, message } = await sendOtp(userEmail, "RESEND");
     if (!success) {
       return setError(message);

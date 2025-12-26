@@ -39,14 +39,14 @@ const useAuthFlowHandler = () => {
       } else if (authState === "OTP_SENT") {
         navigate("/verify");
       } else if (authState === "PASSWORD_REQUIRED") {
-        navigate("/set-password");
+        navigate("/set-password", { replace: true });
       } else if (authState === "AUTHENTICATED") {
         login(pendingUserData);
         navigate("/dashboard", { replace: true });
         setPendingUserData(null);
       } else if (authState === "NEW_PASSWORD_REQUIRED") {
         navigate("/email-send");
-      } else if (authState === "LOGGIN_OUT") {
+      } else if (authState === "LOGGING_OUT") {
         logout();
         handleAuthState("LOGOUT_CLEANUP_DONE");
         navigate("/login", { replace: true });

@@ -1,6 +1,6 @@
 import React from "react";
 import { XCircle, Repeat, ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import useAuthAction from "../../Hooks/useAuthAction";
 import toast from "react-hot-toast";
