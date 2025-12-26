@@ -1,12 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
+import useAuthAction from "../../Hooks/useAuthAction";
+import toast from "react-hot-toast";
 
 const EmailSent = () => {
   const { userEmail } = useAuth();
-  const handleResend = () => {
+  const { sendResetTokenLink } = useAuthAction();
+  const handleResend = async () => {
     // Add your resend email logic here
-    console.log("Resend email");
+    const { success, message } = await sendResetTokenLink(userEmail, "RESEND");
+    if (!success) {
+      return toast.error(message);
+    }
+    toast.success(message);
   };
 
   return (

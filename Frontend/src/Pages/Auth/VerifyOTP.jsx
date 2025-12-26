@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import AuthError from "./AuthError";
 import toast from "react-hot-toast";
+import { useAuth } from "../../Context/AuthContext";
 
 const VerifyOTP = () => {
-  const navigate = useNavigate();
-  const { verifyOtp } = useAuthAction();
+  const { userEmail } = useAuth();
+  const { verifyOtp, sendOtp } = useAuthAction();
   const [error, setError] = useState(null);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
@@ -34,16 +35,23 @@ const VerifyOTP = () => {
     e.preventDefault();
     // Add your OTP verification logic here
     const otpCode = otp.join("");
-    const response = await verifyOtp(otpCode);
-    if (!response.success) {
-      return setError(response.message);
+    const { success, message } = await verifyOtp(otpCode);
+    if (!success) {
+      return setError(message);
     }
+    setError("");
     toast.success(response.message);
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     // Add your resend OTP logic here
     console.log("Resend OTP");
+    const { success, message } = await sendOtp(userEmail, "RESEND");
+    if (!success) {
+      return setError(message);
+    }
+    setError("");
+    toast.success(message);
   };
 
   return (

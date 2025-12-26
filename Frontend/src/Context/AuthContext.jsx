@@ -11,7 +11,7 @@ import { AppProperties } from "../Utils/AppProperties";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [authState, setAuthState] = useState("IDLEE");
+  const [authState, setAuthState] = useState("IDLE");
   const [userEmail, setUserEmail] = useState(null);
   const [pendingUserData, setPendingUserData] = useState(null);
   const [user, setUser] = useState(null);
@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }) => {
     setAccountStatus(null);
     setResetTokenStatus(null);
   };
-
   const handleAuthState = (next) => {
     try {
       const nextState = authStateMachine(authState, next);

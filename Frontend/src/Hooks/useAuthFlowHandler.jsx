@@ -14,6 +14,8 @@ const useAuthFlowHandler = () => {
     login,
     authRecovery,
     setAuthRecovery,
+    logout,
+    handleAuthState,
   } = useAuth();
   const { sendOtp } = useAuthAction();
 
@@ -32,10 +34,8 @@ const useAuthFlowHandler = () => {
         return;
       }
 
-      if (authState === "IDLE") {
-        navigate("/login", { replace: true });
-      } else if (authState === "OTP_REQUIRED") {
-        await sendOtp(userEmail);
+      if (authState === "OTP_REQUIRED") {
+        await sendOtp(userEmail, "FLOW");
       } else if (authState === "OTP_SENT") {
         navigate("/verify");
       } else if (authState === "PASSWORD_REQUIRED") {
@@ -46,6 +46,10 @@ const useAuthFlowHandler = () => {
         setPendingUserData(null);
       } else if (authState === "NEW_PASSWORD_REQUIRED") {
         navigate("/email-send");
+      } else if (authState === "LOGGIN_OUT") {
+        logout();
+        handleAuthState("LOGOUT_CLEANUP_DONE");
+        navigate("/login", { replace: true });
       }
     };
     handleFlow();

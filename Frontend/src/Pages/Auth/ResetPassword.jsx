@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, replace, useNavigate, useSearchParams } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import { useAuth } from "../../Context/AuthContext";
 import AuthError from "./AuthError";
@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 const ResetPassword = () => {
   const [params] = useSearchParams();
   const token = params.get("token");
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,11 +41,12 @@ const ResetPassword = () => {
     if (!allValid) {
       return;
     }
-    const response = await resetPassword(token, password);
-    if (!response.success) {
-      return setError(response.message);
+    const { success, message } = await resetPassword(token, password);
+    if (!success) {
+      return setError(message);
     }
-    toast.success(response.message)
+    toast.success(message);
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -194,7 +196,7 @@ const ResetPassword = () => {
               </div>
             </div>
 
-            {error && <AuthError />}
+            {error && <AuthError error={error} />}
 
             {/* Password Requirements with Live Validation */}
             <div className="bg-gray-50 border-2 border-gray-200 p-4 rounded-lg">

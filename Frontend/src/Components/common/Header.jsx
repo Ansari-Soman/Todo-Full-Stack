@@ -6,9 +6,8 @@ import useAuthAction from "../../Hooks/useAuthAction";
 import toast from "react-hot-toast";
 
 const Header = () => {
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { logoutUser } = useAuthAction();
-  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = async () => {

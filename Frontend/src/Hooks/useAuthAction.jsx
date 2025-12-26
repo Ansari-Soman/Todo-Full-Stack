@@ -7,18 +7,11 @@ import { AppError } from "../Utils/AppError";
 
 const useAuthAction = () => {
   const {
-    login,
-    setOtpStatus,
-    setAccountStatus,
     userEmail,
     setUserEmail,
-    setResetEmailStatus,
-    logout,
     handleAuthState,
-    pendingUserData,
     setPendingUserData,
   } = useAuth();
-  const navigate = useNavigate();
 
   // Register user
   const registerUser = handleApiRequest(async (fullName, email) => {
@@ -27,7 +20,7 @@ const useAuthAction = () => {
       email,
     });
     setUserEmail(email);
-    handleAuthState("REGISTER_SUCCESSs");
+    handleAuthState("REGISTER_SUCCESS");
     return { success: true, message: response.message };
   });
 
@@ -54,7 +47,7 @@ const useAuthAction = () => {
     };
   });
 
-  const sendOtp = handleApiRequest(async (email) => {
+  const sendOtp = handleApiRequest(async (email, source) => {
     if (!userEmail) throw new AppError("verifyOtp called without userEmail");
     const otpResponse = await axiosInstance.post(API_PATH.AUTH.SEND_OTP, {
       email,
@@ -64,8 +57,9 @@ const useAuthAction = () => {
         userMessage: "Failed to send the OTP",
       });
     }
-    handleAuthState("OTP_SENT_SUCCESS");
-
+    if (source === "FLOW") {
+      handleAuthState("OTP_SENT_SUCCESS");
+    }
     return { success: true, message: otpResponse.message };
   });
 
@@ -106,14 +100,15 @@ const useAuthAction = () => {
   });
 
   // Send reset token
-  const sendResetTokenLink = handleApiRequest(async (email) => {
+  const sendResetTokenLink = handleApiRequest(async (email, source) => {
     const response = await axiosInstance.post(
       API_PATH.AUTH.RESET_PASSWORD_LINK,
       { email }
     );
     setUserEmail(email);
-    z;
-    handleAuthState("RESET_LINK_SENT_SUCCESS");
+    if (source === "FLOW") {
+      handleAuthState("RESET_LINK_SENT_SUCCESS");
+    }
     return { success: true, message: response.message };
   });
 
@@ -132,7 +127,7 @@ const useAuthAction = () => {
       token,
       newPassword: password,
     });
-    handleAuthState("NEW_PASSWORD_SUCCESS");
+    handleAuthState("RESET_PASSWORD_SUCCESS");
     return { success: true, message: response.message };
   });
 

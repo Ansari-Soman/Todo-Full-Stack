@@ -5,18 +5,17 @@ import AuthError from "./AuthError";
 import toast from "react-hot-toast";
 
 const ForgotPasswordEmail = () => {
-  console.log("ForgotPasswordEmail");
   const [email, setEmail] = useState("");
   const { sendResetTokenLink } = useAuthAction();
   const [error, setError] = useState(null);
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Add your forgot password logic here
-    const response = await sendResetTokenLink(email);
-    if (!response.success) {
-      return setError(response.message);
+    const { success, message } = await sendResetTokenLink(email, "FLOW");
+    if (!success) {
+      return setError(message);
     }
-    toast.success(response.message);
+    toast.success(message);
   };
 
   return (

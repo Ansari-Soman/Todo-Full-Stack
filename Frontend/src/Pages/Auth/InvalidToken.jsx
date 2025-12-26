@@ -1,18 +1,20 @@
 import React from "react";
 import { XCircle, Repeat, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
+import useAuthAction from "../../Hooks/useAuthAction";
+import toast from "react-hot-toast";
 
 const InvalidToken = () => {
-  const handleRequestNewLink = () => {
-    console.log(
-      "Action: Redirecting user to the 'Forgot Password' form to request a new link."
-    );
+  const { userEmail } = useAuth();
+  const { sendResetTokenLink } = useAuthAction();
+  const handleRequestNewLink = async () => {
+    const { success, message } = await sendResetTokenLink(userEmail, "RESEND");
+    if (!success) {
+      return toast.error(message);
+    }
+    toast.success(message);
   };
-
-  const handleGoToLogin = () => {
-    console.log("Action: Redirecting user to the 'Login' page.");
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-orange-50 flex items-center justify-center px-4 py-12 font-sans">
       <div className="w-full max-w-md">

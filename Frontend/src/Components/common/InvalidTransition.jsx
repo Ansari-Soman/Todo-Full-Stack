@@ -4,11 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 
 export default function InvalidTransition() {
-  const [countdown, setCountdown] = useState(15);
+  const [countdown, setCountdown] = useState(10);
   const navigate = useNavigate();
-  // const { resetAllState } = useAuth();
   useEffect(() => {
-    // resetAllState();
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -75,7 +73,6 @@ export default function InvalidTransition() {
             <button
               onClick={() => {
                 navigate("/login", { replace: true });
-                console.log("Redirect to /login");
               }}
               className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
             >
