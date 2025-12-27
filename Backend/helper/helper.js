@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 export const generateLoginToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -35,3 +36,8 @@ export const setUserData = (user) => {
   };
   return userData;
 };
+
+export const generateOpaqueToken = () => crypto.randomBytes(32).toString("hex");
+
+export const hashOpaqueToken = (token) =>
+  crypto.createHash("sha256").update(token).digest("hex");

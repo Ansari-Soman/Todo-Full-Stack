@@ -20,7 +20,7 @@ export const sendResetPasswordEmail = async ({ to, name, resetLink }) => {
 };
 
 export const sendWelcomeEmail = async ({ to, name }) => {
-  let html = loadTemplate("../emails/resetPassword.html");
+  let html = loadTemplate("../emails/welcomeEmail.html");
   html = html.replace("{{name}}", name);
 
   return await resend.emails.send({

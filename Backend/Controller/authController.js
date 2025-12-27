@@ -9,12 +9,15 @@ import User from "../Model/User.js";
 import jwt from "jsonwebtoken";
 import {
   generateLoginToken,
+  generateOpaqueToken,
   generateOTP,
   generateResetPasswordOtp,
+  hashOpaqueToken,
   setCookie,
   setUserData,
 } from "../helper/helper.js";
 import asyncHandler from "../Utils/asyncHandler.js";
+import { verifyResetTokenHelper } from "../helper/verifyResetToken.js";
 
 // When typing email for registration
 export const checkUserExist = asyncHandler(async (req, res) => {
@@ -216,9 +219,10 @@ export const getUserInfo = asyncHandler(async (req, res) => {
 });
 
 // RESET PASSWORD
-export const verifyResetToken = asyncHandler((req, res) => {
+export const verifyResetToken = asyncHandler(async (req, res) => {
   const { token } = req.body;
-  jwt.verify(token, process.env.RESET_SECRET);
+  await verifyResetTokenHelper(token);
+
   return res.status(200).json({
     success: true,
     resetTokenStatus: "valid",
@@ -241,7 +245,11 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
     throw new Error("Account is not verified");
   }
 
-  const resetToken = generateResetPasswordOtp(user._id);
+  const resetToken = generateOpaqueToken();
+  user.resetPasswordTokenHash = hashOpaqueToken(resetToken);
+  user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  await user.save();
+
   const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
   await sendResetPasswordEmail({
@@ -250,7 +258,6 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
     resetLink,
   });
 
-  await user.save();
   return res.status(200).json({
     success: true,
     resetEmailStatus: "sent",
@@ -261,10 +268,7 @@ export const resetPasswordLink = asyncHandler(async (req, res) => {
 export const resetPassword = asyncHandler(async (req, res) => {
   const { token, newPassword } = req.body;
 
-  const decode = jwt.verify(token, process.env.RESET_SECRET);
-  const userId = decode.id;
-
-  const user = await User.findById(userId);
+  const user = await verifyResetTokenHelper(token);
   if (!user) {
     res.status(404);
     throw new Error("User not found");
@@ -276,6 +280,8 @@ export const resetPassword = asyncHandler(async (req, res) => {
   }
 
   user.password = newPassword;
+  user.resetPasswordTokenHash = null;
+  user.resetPasswordExpiresAt = null;
   await user.save();
   await sendResetSuccessEmail({
     to: user.email,
