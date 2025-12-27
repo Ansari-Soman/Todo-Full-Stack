@@ -1,17 +1,33 @@
+import React, { useState } from "react";
 import moment from "moment";
 import toast from "react-hot-toast";
+import { Calendar, Trash2, Check, Loader2 } from "lucide-react";
 
 const Task = ({ todo, deleteTodo, updateTodo }) => {
-  const { todoName, date, _id } = todo;
+  const { todoName, completed, date, _id } = todo;
+
+  // Local loading states to prevent double-clicks
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleUpdateTodo = async () => {
-    todo.completed = !todo.completed;
-    const { success, message } = await updateTodo(_id, todo.completed);
+    // Prevent interaction if any action is already in progress
+    if (isUpdating || isDeleting) return;
+
+    setIsUpdating(true);
+    const { success, message } = await updateTodo(_id, !completed);
+    setIsUpdating(false);
+
     if (!success) return toast.error(message);
   };
 
   const handleDeleteTodo = async () => {
+    if (isUpdating || isDeleting) return;
+
+    setIsDeleting(true);
     const { success, message } = await deleteTodo(_id);
+    setIsDeleting(false);
+
     if (!success) return toast.error(message);
     toast.success(message);
   };
@@ -19,97 +35,84 @@ const Task = ({ todo, deleteTodo, updateTodo }) => {
   return (
     <div
       className={`
-      bg-white rounded-xl shadow-sm hover:shadow-md 
-      transition-all duration-200 mb-3 border-l-4
-      ${todo.completed ? "border-green-500 bg-gray-50" : "border-blue-500"}
+      group flex items-center justify-between p-4 rounded-xl border transition-all duration-200
+      ${
+        completed
+          ? "bg-zinc-50 border-zinc-100"
+          : "bg-white border-zinc-200 hover:border-violet-300 hover:shadow-sm"
+      }
     `}
     >
-      <div className="flex justify-between items-center px-5 py-4">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          {/* Custom Checkbox */}
-          <div className="flex-shrink-0">
-            <label className="relative flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={handleUpdateTodo}
-                className="sr-only peer"
-              />
-              <div
-                className={`
-                w-6 h-6 border-2 rounded-md flex items-center justify-center
-                transition-all duration-200
-                ${
-                  todo.completed
-                    ? "bg-green-500 border-green-500"
-                    : "border-gray-300 hover:border-blue-500"
-                }
-              `}
-              >
-                {todo.completed && (
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
-              </div>
-            </label>
-          </div>
+      <div className="flex items-center gap-4 flex-1 min-w-0">
+        {/* Custom Checkbox */}
+        <button
+          onClick={handleUpdateTodo}
+          disabled={isUpdating || isDeleting}
+          className={`
+            flex-shrink-0 cursor-pointer w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200
+            ${
+              isUpdating
+                ? "border-violet-300 bg-violet-50 cursor-wait"
+                : completed
+                ? "bg-emerald-500 border-emerald-500 text-white"
+                : "border-zinc-300 hover:border-violet-500 text-transparent"
+            }
+          `}
+        >
+          {isUpdating ? (
+            <Loader2 size={14} className="animate-spin text-violet-600" />
+          ) : (
+            completed && <Check size={14} strokeWidth={3} />
+          )}
+        </button>
 
-          {/* Task Details */}
-          <div className="flex-1 min-w-0">
-            <h4
-              className={`
-              text-lg font-medium break-words
-              transition-all duration-200
-              ${todo.completed ? "line-through text-gray-400" : "text-gray-800"}
-            `}
-            >
-              {todoName}
-            </h4>
-            <div className="flex items-center gap-2 mt-1">
-              <svg
-                className="w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <p className="text-sm text-gray-500">
-                Due: {moment(date).format("MMM DD, YYYY")}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Delete Button */}
-        <div className="flex-shrink-0 ml-4">
-          <button
-            onClick={() => handleDeleteTodo()}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium
-                     hover:bg-red-600 active:bg-red-700
-                     transition-colors duration-200 
-                     shadow-sm hover:shadow-md
-                     focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        {/* Task Info */}
+        <div className="flex-1 min-w-0">
+          <h4
+            className={`
+            text-lg font-medium truncate transition-all duration-200
+            ${completed ? "text-zinc-400 line-through" : "text-zinc-800"}
+          `}
           >
-            Delete
-          </button>
+            {todoName}
+          </h4>
+          <div className="flex items-center gap-2 mt-0.5">
+            <Calendar
+              size={14}
+              className={completed ? "text-zinc-300" : "text-violet-500"}
+            />
+            <p
+              className={`text-sm ${
+                completed ? "text-zinc-300" : "text-zinc-500"
+              }`}
+            >
+              {moment(date).format("MMM DD, YYYY")}
+            </p>
+          </div>
         </div>
+      </div>
+
+      {/* Actions */}
+      <div className="ml-4">
+        <button
+          onClick={handleDeleteTodo}
+          disabled={isUpdating || isDeleting}
+          className={`
+            p-2 rounded-lg transition-all duration-200 focus:outline-none cursor-pointer
+            ${
+              isDeleting
+                ? "text-red-400 bg-red-50 cursor-wait opacity-100"
+                : "text-zinc-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 focus:opacity-100"
+            }
+          `}
+          title="Delete Task"
+        >
+          {isDeleting ? (
+            <Loader2 size={20} className="animate-spin" />
+          ) : (
+            <Trash2 size={20} />
+          )}
+        </button>
       </div>
     </div>
   );

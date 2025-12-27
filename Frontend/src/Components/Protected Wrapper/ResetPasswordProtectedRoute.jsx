@@ -24,7 +24,7 @@ const ResetPasswordProtectedRoute = ({ children }) => {
   if (tokenStatus === "invalid") return <InvalidToken />;
   if (tokenStatus === "valid") return children;
 
-  return null; // fallback (should never reach)
+  return null;
 };
 
 export default ResetPasswordProtectedRoute;

@@ -9,23 +9,36 @@ const App = () => {
       <Toaster
         position="top-right"
         toastOptions={{
+          // Default Styles
           style: {
             background: "#ffffff",
-            color: "#1f2937",
-            padding: "10px 16px",
-            borderRadius: "12px",
+            color: "#3f3f46",
+            padding: "16px",
+            borderRadius: "16px",
             fontSize: "14px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.10)",
-            borderLeft: "6px solid #3b82f6", // blue-500
+            boxShadow:
+              "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+            border: "1px solid #e4e4e7",
+            maxWidth: "350px",
           },
+          // Success Styles
           success: {
+            iconTheme: {
+              primary: "#7c3aed",
+              secondary: "#ffffff",
+            },
             style: {
-              borderLeftColor: "#10b981", // green-500
+              borderLeft: "4px solid #7c3aed",
             },
           },
+          // Error Styles
           error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#ffffff",
+            },
             style: {
-              borderLeftColor: "#ef4444", // red-500
+              borderLeft: "4px solid #ef4444",
             },
           },
         }}

@@ -1,60 +1,52 @@
 import React from "react";
 import { LogOut, X } from "lucide-react";
+import Button from "./Button";
 
 const LogoutConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
+
   return (
-    // Backdrop
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4 transition-opacity duration-300">
-      {/* Modal Container */}
-      <div className="relative w-full max-w-sm mx-auto bg-white rounded-xl shadow-2xl transform transition-transform duration-300 scale-100">
-        {/* Close Button */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop with Blur */}
+      <div
+        className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 scale-100 transition-all border border-zinc-100">
+        {/* Close Icon */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Close modal"
+          className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 transition-colors"
         >
-          <X className="w-5 h-5" />
+          <X size={20} />
         </button>
 
-        {/* Content */}
-        <div className="p-8">
-          {/* Icon */}
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-6">
-            <LogOut className="h-6 w-6 text-red-600" />
+        {/* Icon & Title */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4 text-red-500">
+            <LogOut size={24} />
           </div>
+          <h3 className="text-xl font-bold text-zinc-800">Log Out?</h3>
+          <p className="text-zinc-500 text-sm mt-2">
+            Are you sure you want to sign out? You will need to login again to
+            access your tasks.
+          </p>
+        </div>
 
-          {/* Title and Message */}
-          <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Confirm Logout
-            </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Are you sure you want to log out? You will need to sign back in to
-              access your to-do lists.
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mt-8 space-y-3 sm:flex sm:flex-row-reverse sm:space-y-0 sm:space-x-4 sm:space-x-reverse">
-            <button
-              onClick={onConfirm}
-              className="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg shadow-md
-                         hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
-            >
-              Log Out
-            </button>
-
-            <button
-              onClick={onClose}
-              className="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm
-                         hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
-            >
-              Cancel
-            </button>
-          </div>
+        {/* Actions */}
+        <div className="flex gap-3">
+          <Button onClick={onClose} variant="outline" className="flex-1">
+            Cancel
+          </Button>
+          <Button
+            onClick={onConfirm}
+            variant="primary"
+            className="flex-1 bg-red-600 hover:bg-red-700 shadow-red-500/20"
+          >
+            Log Out
+          </Button>
         </div>
       </div>
     </div>

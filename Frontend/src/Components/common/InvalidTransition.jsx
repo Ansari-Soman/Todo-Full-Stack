@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, Shield, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { ShieldAlert, ArrowRight, AlertTriangle, Timer } from "lucide-react";
+import AuthLayout from "./AuthLayout";
+import Button from "./Button";
 
 export default function InvalidTransition() {
   const [countdown, setCountdown] = useState(10);
   const navigate = useNavigate();
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -19,82 +21,68 @@ export default function InvalidTransition() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Error Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-red-100 overflow-hidden">
-          {/* Header with Icon */}
-          <div className="bg-gradient-to-r from-red-500 to-orange-500 p-8 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-4 shadow-lg">
-              <Shield className="w-10 h-10 text-red-500" />
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
-              Invalid State Transition
-            </h1>
-            <p className="text-red-50 text-sm">
-              Authentication Flow Interrupted
-            </p>
-          </div>
-
-          {/* Content */}
-          <div className="p-8">
-            <div className="flex items-start space-x-3 mb-6">
-              <AlertTriangle className="w-6 h-6 text-orange-500 flex-shrink-0 mt-1" />
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                  Something Went Wrong
-                </h2>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  We detected an invalid state transition in the authentication
-                  flow. This could happen if you navigated using browser
-                  controls or if your session was interrupted.
-                </p>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-gray-200 my-6"></div>
-
-            {/* Redirect Info */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-gray-700 text-center">
-                Redirecting to login page in
-              </p>
-              <div className="text-4xl font-bold text-red-500 text-center mt-2">
-                {countdown}
-              </div>
-              <p className="text-xs text-gray-500 text-center mt-2">seconds</p>
-            </div>
-
-            {/* Manual Redirect Button */}
-            <button
-              onClick={() => {
-                navigate("/login", { replace: true });
-              }}
-              className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
-            >
-              <span>Go to Login Now</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
-
-            {/* Help Text */}
-            <p className="text-xs text-gray-500 text-center mt-4">
-              If this problem persists, please contact support
-            </p>
+    <AuthLayout
+      title="Invalid Transition"
+      subtitle="Authentication Flow Interrupted"
+    >
+      <div className="space-y-8">
+        {/* Error Icon */}
+        <div className="flex justify-center">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center border-4 border-red-100 animate-pulse">
+            <ShieldAlert className="w-10 h-10 text-red-500" />
           </div>
         </div>
 
-        {/* Additional Info */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Error Code:{" "}
-            <span className="font-mono text-red-600">AUTH_STATE_INVALID</span>
+        {/* Explanation Box */}
+        <div className="bg-red-50/50 border border-red-100 p-5 rounded-xl">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-semibold text-red-900 mb-1">
+                Something Went Wrong
+              </h3>
+              <p className="text-sm text-red-700 leading-relaxed">
+                We detected an invalid state transition. This usually happens if
+                you try to access a verification page directly without
+                completing the previous step.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex flex-col items-center justify-center space-y-2">
+          <p className="text-zinc-500 text-sm font-medium">
+            Redirecting to login in
+          </p>
+          <div className="flex items-baseline gap-1 text-zinc-900">
+            <Timer className="w-5 h-5 text-zinc-400 self-center mr-2" />
+            <span className="text-4xl font-bold tabular-nums tracking-tight">
+              {countdown}
+            </span>
+            <span className="text-zinc-500 text-sm">seconds</span>
+          </div>
+        </div>
+
+        {/* Manual Redirect Button */}
+        <Button
+          onClick={() => navigate("/login", { replace: true })}
+          className="w-full bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
+        >
+          Go to Login Now
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+
+        {/* Footer Info */}
+        <div className="text-center space-y-2">
+          <p className="text-xs text-zinc-400 font-mono">
+            Error Code: AUTH_STATE_INVALID
           </p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

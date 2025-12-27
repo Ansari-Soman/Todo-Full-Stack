@@ -1,57 +1,66 @@
 import React, { useState } from "react";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { Eye, EyeOff } from "lucide-react";
 
-const Input = ({ type, placeholder, label, onChange, value }) => {
+const Input = ({
+  type = "text",
+  placeholder,
+  label,
+  onChange,
+  value,
+  error,
+  ...props
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const inputType =
+    type === "password" ? (showPassword ? "text" : "password") : type;
 
   return (
-    <div className="w-full">
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
-        {label}
-      </label>
+    <div className="w-full space-y-2">
+      {label && (
+        <label className="block text-sm font-medium text-zinc-700">
+          {label}
+        </label>
+      )}
 
       <div
         className={`
-        flex items-center w-full border-2 px-4 py-3 rounded-lg
-        transition-all duration-200 bg-white
-        ${
-          isFocused
-            ? "border-blue-500 ring-2 ring-blue-100"
-            : "border-gray-300 hover:border-gray-400"
-        }
-      `}
+          relative flex items-center w-full border-2 rounded-xl transition-all duration-200 bg-zinc-50
+          ${
+            error
+              ? "border-red-300 bg-red-50 focus-within:border-red-500 focus-within:ring-4 focus-within:ring-red-500/10"
+              : isFocused
+              ? "border-violet-500 bg-white ring-4 ring-violet-500/10"
+              : "border-zinc-200 hover:border-zinc-300 hover:bg-white"
+          }
+        `}
       >
         <input
-          type={
-            type === "password" ? (showPassword ? "text" : "password") : type
-          }
+          type={inputType}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e)}
+          onChange={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400"
+          className="w-full px-4 py-3 bg-transparent outline-none text-zinc-900 placeholder-zinc-400 rounded-xl"
+          {...props}
         />
 
+        {/* Password Toggle Button */}
         {type === "password" && (
           <button
             type="button"
-            onClick={toggleShowPassword}
-            className="ml-2 text-gray-500 hover:text-gray-700 transition-colors duration-200 focus:outline-none"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 p-1 text-zinc-400 hover:text-zinc-600 transition-colors"
           >
-            {showPassword ? (
-              <FaRegEye size={20} />
-            ) : (
-              <FaRegEyeSlash size={20} />
-            )}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         )}
       </div>
+
+      {/* Error Message */}
+      {error && <p className="text-sm text-red-500 animate-pulse">{error}</p>}
     </div>
   );
 };

@@ -8,8 +8,9 @@ import { TodoContext } from "../../Context/TodoContext";
 const Main = () => {
   const { summary, todoList } = useContext(TodoContext);
   const { addTodo, deleteTodo, updateTodo } = useTodoManager();
+
   return (
-    <>
+    <div className="min-h-screen bg-zinc-50 pb-20">
       <SummaryBar summary={summary} />
       <Input addTodo={addTodo} />
       <TaskList
@@ -17,7 +18,7 @@ const Main = () => {
         updateTodo={updateTodo}
         todoList={todoList}
       />
-    </>
+    </div>
   );
 };
 

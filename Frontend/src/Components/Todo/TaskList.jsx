@@ -1,64 +1,50 @@
 import Task from "./Task";
 import { useContext } from "react";
 import { TodoContext } from "../../Context/TodoContext";
+import { ClipboardList, Loader2 } from "lucide-react";
 
 const TaskList = ({ todoList, deleteTodo, updateTodo }) => {
   const { loading } = useContext(TodoContext);
 
   return (
-    <div className="container mx-auto px-4 sm:px-10 mb-8">
-      <div className="bg-white rounded-xl shadow-md p-6 sm:p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-100">
-          <h4 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-            <span className="bg-blue-100 text-blue-600 rounded-lg px-3 py-1 text-lg font-semibold">
+    <div className="container mx-auto px-4 sm:px-10 mb-12">
+      <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-6 sm:p-8 min-h-[400px]">
+        <div className="flex items-center justify-between mb-8">
+          <h4 className="text-2xl font-bold text-zinc-800 flex items-center gap-3">
+            Your Tasks
+            <span className="bg-zinc-100 text-zinc-600 rounded-full px-3 py-1 text-sm font-semibold border border-zinc-200">
               {todoList.length}
             </span>
-            Tasks
           </h4>
         </div>
 
-        {/* Content */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
-            <p className="text-gray-500 font-medium">Loading tasks...</p>
+          <div className="flex flex-col items-center justify-center py-20 text-zinc-400">
+            <Loader2 className="w-10 h-10 animate-spin mb-4 text-violet-500" />
+            <p>Loading your tasks...</p>
           </div>
         ) : (
-          <div>
+          <div className="space-y-3">
             {todoList.length > 0 ? (
-              <div className="space-y-2">
-                {todoList.map((todo, idx) => (
-                  <Task
-                    todo={todo}
-                    key={todo._id || idx}
-                    deleteTodo={deleteTodo}
-                    updateTodo={updateTodo}
-                  />
-                ))}
-              </div>
+              todoList.map((todo, idx) => (
+                <Task
+                  todo={todo}
+                  key={todo._id || idx}
+                  deleteTodo={deleteTodo}
+                  updateTodo={updateTodo}
+                />
+              ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-16">
-                <div className="bg-gray-100 rounded-full p-6 mb-4">
-                  <svg
-                    className="w-16 h-16 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                    />
-                  </svg>
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center mb-6">
+                  <ClipboardList className="w-12 h-12 text-zinc-300" />
                 </div>
-                <p className="text-gray-500 text-lg font-medium mb-1">
+                <h3 className="text-xl font-semibold text-zinc-700 mb-2">
                   No tasks yet
-                </p>
-                <p className="text-gray-400 text-sm">
-                  Add your first task to get started!
+                </h3>
+                <p className="text-zinc-500 max-w-sm">
+                  You have no pending tasks. Use the input above to add your
+                  first task and start being productive!
                 </p>
               </div>
             )}
