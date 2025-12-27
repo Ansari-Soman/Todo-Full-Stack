@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../Components/common/Input";
 import useAuthAction from "../../Hooks/useAuthAction";
@@ -7,14 +7,13 @@ import { useAuth } from "../../Context/AuthContext";
 import toast from "react-hot-toast";
 
 const SignUp = () => {
-  const { otpStatus } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const { registerUser } = useAuthAction();
-  const { isAuthenticated, authState } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {

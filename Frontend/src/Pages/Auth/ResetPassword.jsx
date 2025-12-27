@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, replace, useNavigate, useSearchParams } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import useAuthAction from "../../Hooks/useAuthAction";
 import { useAuth } from "../../Context/AuthContext";
 import AuthError from "./AuthError";

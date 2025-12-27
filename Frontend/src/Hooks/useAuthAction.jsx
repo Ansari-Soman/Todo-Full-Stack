@@ -1,6 +1,5 @@
 import axiosInstance from "../Utils/axiosInstance";
 import { API_PATH } from "../Utils/apiPath";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { handleApiRequest } from "../Utils/handleApiRequest";
 import { AppError } from "../Utils/AppError";

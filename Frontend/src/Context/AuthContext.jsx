@@ -17,10 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [otpStatus, setOtpStatus] = useState(null);
-  const [resetEmailStatus, setResetEmailStatus] = useState(null);
   const [accountStatus, setAccountStatus] = useState(null);
-  const [resetTokenStatus, setResetTokenStatus] = useState(null);
   const [authRecovery, setAuthRecovery] = useState(null);
   useEffect(() => {
     const checkSession = async () => {
@@ -50,10 +47,7 @@ export const AuthProvider = ({ children }) => {
     setUserEmail(null);
     setUser(null);
     setIsAuthenticated(false);
-    setOtpStatus(null);
-    setResetEmailStatus(null);
     setAccountStatus(null);
-    setResetTokenStatus(null);
   };
   const handleAuthState = (next) => {
     try {
@@ -77,16 +71,10 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
-        otpStatus,
-        setOtpStatus,
-        resetTokenStatus,
-        setResetTokenStatus,
         accountStatus,
         setAccountStatus,
         userEmail,
         setUserEmail,
-        resetEmailStatus,
-        setResetEmailStatus,
         authState,
         setAuthState,
         handleAuthState,

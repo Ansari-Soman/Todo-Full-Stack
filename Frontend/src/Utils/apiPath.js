@@ -1,5 +1,3 @@
-
-
 export const API_PATH = {
   AUTH: {
     CHECK: "/api/v1/auth/check-user",

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { replace, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuthAction from "./useAuthAction";
 import { useAuth } from "../Context/AuthContext";
 import toast from "react-hot-toast";

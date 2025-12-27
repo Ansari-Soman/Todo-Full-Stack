@@ -1,6 +1,5 @@
 import axios from "axios";
 import { AppProperties } from "./AppProperties";
-import { callLogoutHandler } from "../Services/authEvents";
 
 const axiosInstance = axios.create({
   baseURL: AppProperties.BASE_URL,

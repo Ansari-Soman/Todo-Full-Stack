@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
 import moment from "moment";
 import toast from "react-hot-toast";
 
 const Task = ({ todo, deleteTodo, updateTodo }) => {
-  const { todoName, completed, date, _id } = todo;
+  const { todoName, date, _id } = todo;
 
   const handleUpdateTodo = async () => {
     todo.completed = !todo.completed;

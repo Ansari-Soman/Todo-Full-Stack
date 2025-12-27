@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Navigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
 import Loading from "../common/Loading";
 import InvalidToken from "../../Pages/Auth/InvalidToken";
 import useAuthAction from "../../Hooks/useAuthAction";

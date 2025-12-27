@@ -7,7 +7,7 @@ import { API_PATH } from "../Utils/apiPath";
 import { useAuth } from "../Context/AuthContext";
 import useAuthFlowHandler from "../Hooks/useAuthFlowHandler";
 const WebWrapper = () => {
-  const { user, isAuthenticated, authState } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [todoList, setTodoList] = useState([]);
   const [summary, setSummary] = useState({
     total: "",

@@ -2,7 +2,7 @@ import SummaryBar from "../../Components/Todo/SummaryBar";
 import Input from "../../Components/Todo/TodoInput";
 import TaskList from "../../Components/Todo/TaskList";
 import useTodoManager from "../../Hooks/useTodoManager";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { TodoContext } from "../../Context/TodoContext";
 
 const Main = () => {
